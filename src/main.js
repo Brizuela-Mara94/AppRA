@@ -193,3 +193,11 @@ const setupRestartButton = () => {
 
   restartButton.addEventListener('click', restartButtonListener);
 };
+document.addEventListener("DOMContentLoaded", () => {
+  const startBtn = document.getElementById("start-button");
+  if (startBtn) {
+    startBtn.addEventListener("click", () => {
+      window.start();
+    });
+  }
+});
