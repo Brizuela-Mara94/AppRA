@@ -1,3 +1,39 @@
+/* Definición de la familia de fuentes Arida */
+@font-face {
+    font-family: 'Arida';
+    src: url('../assets/fonts/AridaUNSJ.otf') format('opentype');
+    font-weight: normal; /* 400 */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Arida';
+    src: url('../assets/fonts/AridaUNSJit.otf') format('opentype');
+    font-weight: normal; /* 400 */
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Arida';
+    src: url('../assets/fonts/Arida-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Arida';
+    src: url('../assets/fonts/Arida-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Arida';
+    src: url('../assets/fonts/Arida-Black.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -7,7 +43,7 @@ body,html {
   padding: 0;
   box-sizing: border-box;
   width: 100%;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Arida', sans-serif;
   background: #000;
   color: white;
   overflow-x: hidden;
@@ -437,4 +473,71 @@ body,html {
   .instruction-step {
     font-size: 0.85rem;
   }
+}
+
+/* === PÁGINA DE BIENVENIDA === */
+.welcome-container {
+  background-image: url('../assets/FONDO SIED.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.welcome-card {
+  background-color: transparent;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: none;
+  text-align: center;
+  max-width: 700px;
+  width: 100%;
+  color: #FFF;
+}
+
+.logos-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  max-width: 40%;
+  height: auto;
+  object-fit: contain;
+}
+
+.welcome-card h2 {
+  font-size: 2.2em;
+  font-weight: 700; /* Bold */
+  margin-bottom: 30px;
+  color: #000;
+  text-shadow: none;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 15px 35px;
+  font-size: 1.2em;
+  font-weight: 700; /* Bold */
+  color: #fff;
+  background-color: #005a9c; /* Placeholder: Azul institucional UNSJ */
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button:hover {
+  background-color: #004170; /* Tono más oscuro para hover */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
