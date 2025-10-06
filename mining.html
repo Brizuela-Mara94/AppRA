@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiningTech - Inicio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("../assets/montaña.jpeg") no-repeat center center/cover;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        /* Contenedor principal */
+        #home {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 140px; /* Más margen lateral */
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px 140px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+
+        .logo span {
+            color: #D81E27;
+        }
+
+        /* Fondo rojo ajustado */
+        .red-backdrop {
+            position: absolute;
+            right: 28%;
+            top: 0;
+            width: 28%;
+            height: 100%;
+            background: #D81E27;
+            z-index: 1;
+            filter: brightness(1.2);
+        }
+
+        /* Imagen de la máquina más grande y cercana */
+        .machine-image {
+            position: absolute;
+            right: 10%;
+            top: 52%;
+            transform: translateY(-50%);
+            width: 75%;
+            max-width: 1050px;
+            height: auto;
+            z-index: 2;
+            filter: drop-shadow(-10px 20px 50px rgba(0, 0, 0, 0.6));
+        }
+
+        /* Contenido principal */
+        .hero-content {
+            max-width: 500px;
+            z-index: 4;
+            position: relative;
+            margin-left: 80px; /* Mueve el texto un poco más a la derecha */
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .hero-subtitle::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 2px;
+            background-color: #D81E27;
+        }
+
+        .hero-title {
+            font-size: 68px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            letter-spacing: -1.5px;
+            color: #fff;
+        }
+
+        .hero-description {
+            font-size: 16px;
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            border-left: 2px solid #D81E27;
+            padding-left: 25px;
+            line-height: 1.6;
+        }
+
+        .hero-description strong {
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        .learn-more-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 10px 0;
+            transition: gap 0.3s ease;
+            text-decoration: none;
+        }
+
+        .learn-more-btn:hover {
+            gap: 25px;
+        }
+
+        .learn-more-btn .arrow-circle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transition: border-color 0.3s ease;
+        }
+
+        .learn-more-btn:hover .arrow-circle {
+            border-color: #fff;
+        }
+
+        .learn-more-btn .arrow {
+            font-size: 20px;
+        }
+
+        /* Indicador de página */
+        .page-indicator {
+            position: fixed;
+            bottom: 40px;
+            left: 140px;
+            font-size: 48px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.1);
+            z-index: 10;
+            letter-spacing: -1px;
+        }
+
+        .page-indicator span {
+            font-size: 22px;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 400;
+        }
+
+        /* Responsivo */
+        @media (max-width: 1200px) {
+            #home { padding: 0 80px; }
+            header { padding: 30px 80px; }
+            .hero-title { font-size: 54px; }
+            .machine-image { width: 80%; }
+            .red-backdrop { right: 18%; width: 30%; }
+            .page-indicator { left: 80px; }
+        }
+
+        @media (max-width: 992px) {
+            .hero-content { max-width: 100%; text-align: center; margin-left: 0; }
+            .hero-subtitle, .hero-description {
+                justify-content: center;
+                padding-left: 0;
+                border-left: none;
+                text-align: center;
+            }
+            .hero-subtitle::before { display: none; }
+            .learn-more-btn { margin: 0 auto; }
+            #home {
+                flex-direction: column;
+                justify-content: center;
+                padding: 0 40px;
+            }
+            .red-backdrop { display: none; }
+            .machine-image {
+                position: relative;
+                width: 90%;
+                max-width: 500px;
+                top: auto;
+                right: auto;
+                transform: none;
+                margin-top: -50px;
+                order: -1;
+            }
+            .page-indicator {
+                font-size: 36px;
+                left: 40px;
+                bottom: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="home">
+        <header>
+            <div class="logo">Mining<span>Tech</span></div>
+        </header>
+
+        <div class="red-backdrop"></div>
+        <img src="../assets/m3.png" alt="Excavadora minera" class="machine-image">
+
+        <div class="hero-content">
+            <div class="hero-subtitle">Plataforma educativa para estudiantes</div>
+            <h1 class="hero-title">Aprende sobre equipamiento minero real</h1>
+            <p class="hero-description">
+                Conoce las <strong>maquinarias y equipos</strong> que encontrarás
+                en tu carrera como <strong>Ingeniero de Minas</strong>.
+            </p>
+            <a href="elements.html" class="learn-more-btn">
+                Explorar equipamiento
+                <span class="arrow-circle">
+                    <span class="arrow">&rarr;</span>
+                </span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

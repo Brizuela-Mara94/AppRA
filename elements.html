@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MiningTech - Maquinarias</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:"Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+      background: radial-gradient(circle at center, #0f0f10 0%, #000 100%);
+      color:#fff; overflow:hidden;
+    }
+
+    /* Header (solo logo en la esquina superior izquierda) */
+    header{
+      position:fixed; top:0; left:0; width:100%;
+      padding:22px 56px; display:flex; align-items:center;
+      z-index:50; background:linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+    }
+    .logo{font-weight:700; font-size:26px; color:#fff; text-decoration:none}
+    .logo span{color:#d81e27}
+
+    /* Layout principal: izquierda - centro - derecha */
+    .layout{
+      display:grid;
+      grid-template-columns:320px 1fr 320px;
+      gap:36px;
+      height:100vh;
+      align-items:center;
+      padding:120px 60px 60px; /* deja espacio para header */
+    }
+
+    /* ========== LEFT SIDEBAR (lista de máquinas) ========== */
+    .sidebar-left{
+      display:flex; flex-direction:column; gap:18px;
+      align-self:stretch;
+      justify-content:flex-start;
+    }
+    .sidebar-left h3{
+      color:#d81e27; font-size:13px; text-transform:uppercase; letter-spacing:2px;
+    }
+    .machinery-list{
+      list-style:none; overflow:auto; padding-right:8px;
+    }
+    .machinery-list li{
+      padding:12px 6px; cursor:pointer; color:#9a9a9a; font-size:14px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      display:flex; justify-content:space-between; align-items:center;
+      transition:all .22s ease;
+    }
+    .machinery-list li:hover{ color:#d81e27; transform:translateX(4px) }
+    .machinery-list li.active{ color:#d81e27; font-weight:700; padding-left:10px }
+
+    .small-model{ font-size:12px; color:rgba(255,255,255,0.25); margin-left:8px }
+
+    /* ========== CENTER (showcase) ========== */
+    .machine-view{
+      position:relative; text-align:center; padding:24px;
+    }
+
+    .machine-category{
+      position:absolute; top:6px; left:50%; transform:translateX(-50%);
+      padding:8px 18px; border-radius:20px; border:1px solid #d81e27;
+      color:#d81e27; font-size:12px; background:rgba(216,30,39,0.06);
+      z-index:20;
+    }
+
+    .machine-wrap{
+      display:inline-block; transition:transform .45s ease, filter .45s ease;
+    }
+
+    .machine-img{
+      width:640px; max-width:86vw; transition:opacity .35s ease, transform .45s ease;
+      display:block; margin:0 auto; filter: drop-shadow(0 28px 60px rgba(216,30,39,0.25));
+      opacity:1;
+    }
+    /* estados para animación */
+    .fade-out .machine-img{ opacity:0; transform:scale(.985) }
+    .fade-in .machine-img{ opacity:1; transform:scale(1) }
+
+    .machine-name{ margin-top:28px; font-size:34px; font-weight:700 }
+    .machine-description{ color:#a9a9a9; margin:14px auto; max-width:700px; line-height:1.6 }
+
+    .machine-nav{ margin-top:20px; display:flex; gap:18px; justify-content:center }
+    .nav-btn{
+      width:46px; height:46px; border-radius:50%; border:1px solid #222; background:transparent;
+      color:#9a9a9a; font-size:18px; cursor:pointer; transition:all .22s;
+    }
+    .nav-btn:hover{ border-color:#d81e27; color:#d81e27; background:rgba(216,30,39,0.06) }
+
+    /* ========== RIGHT SIDEBAR (categorías + especificaciones) ========== */
+    .sidebar-right{ align-self:stretch; display:flex; flex-direction:column; gap:22px; justify-content:flex-start }
+    .categories{ display:flex; gap:10px; flex-wrap:wrap }
+    .cat-btn{
+      padding:10px 14px; border-radius:20px; background:transparent; border:1px solid rgba(255,255,255,0.04);
+      color:#bbb; cursor:pointer; font-weight:600; transition:all .18s;
+    }
+    .cat-btn.active{ border-color:#d81e27; color:#d81e27; background:rgba(216,30,39,0.06) }
+
+    .specs{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:18px; border-radius:8px; border:1px solid rgba(255,255,255,0.03);
+    }
+    .specs h4{ color:#d81e27; font-size:14px; margin-bottom:12px; text-transform:uppercase; letter-spacing:1px }
+    .spec-row{ display:flex; justify-content:space-between; margin-bottom:12px; align-items:center }
+    .spec-label{ font-size:12px; color:#9a9a9a; text-transform:uppercase; letter-spacing:1px }
+    .spec-val{ font-weight:700; color:#fff }
+
+    /* Indicador */
+    .page-indicator{ position:fixed; bottom:36px; left:60px; font-size:42px; color:rgba(255,255,255,0.08); font-weight:700 }
+
+    /* Mensaje no items */
+    .empty-msg{ color:#9a9a9a; font-size:15px; padding:10px 6px }
+
+    /* Responsive */
+    @media (max-width:1100px){
+      .layout{ grid-template-columns: 1fr; padding:110px 30px; gap:28px }
+      .sidebar-left, .sidebar-right{ display:none } /* en movil se ocultan; si quieres mostrarlos podemos crear un panel */
+      .machine-img{ width:84vw }
+      header{ padding:18px 24px }
+      .machine-name{ font-size:28px }
+    }
+    /* Layout principal: izquierda - centro - derecha */
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 36px;
+  height: 100vh;
+  align-items: center;        /* centra verticalmente todo el grid */
+  padding: 100px 60px 60px;   /* menos espacio arriba */
+}
+
+/* Menús laterales ahora centrados verticalmente */
+.sidebar-left,
+.sidebar-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    /* centrado vertical */
+  gap: 22px;
+  height: 100%;
+}
+
+/* Imagen más chica para evitar que empuje los botones */
+.machine-img {
+  width: 480px;               /* antes 640px */
+  max-width: 70vw;
+  transition: opacity .35s ease, transform .45s ease;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 28px 60px rgba(216,30,39,0.25));
+  opacity: 1;
+}
+
+/* Indicador de página más visible y actualizado */
+.page-indicator {
+  position: fixed;
+  bottom: 36px;
+  left: 60px;
+  font-size: 42px;
+  color: rgba(255,255,255,0.08);
+  font-weight: 700;
+}
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="logo" href="#">Mining<span>Tech</span></a>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT: lista -->
+    <aside class="sidebar-left">
+      <h3>Maquinarias</h3>
+      <ul id="machineryList" class="machinery-list" aria-label="Lista de maquinarias">
+        <!-- Poblado por JS -->
+      </ul>
+    </aside>
+
+    <!-- CENTER: showcase -->
+    <main class="machine-view" role="main">
+      <div class="machine-category" id="machineCategory">MAQUINARIA</div>
+
+      <div id="machineWrapper" class="machine-wrap fade-in">
+        <img id="machineImage" class="machine-img" src="../assets/maquina.png" alt="Excavadora" />
+      </div>
+
+      <h2 id="machineName" class="machine-name">Excavadora hidráulica</h2>
+      <p id="machineDesc" class="machine-description">
+        Excavadora de alto rendimiento diseñada para operaciones mineras de gran escala.
+      </p>
+
+      <div class="machine-nav">
+        <button class="nav-btn" id="prevBtn" title="Anterior">←</button>
+        <button class="nav-btn" id="nextBtn" title="Siguiente">→</button>
+      </div>
+    </main>
+
+    <!-- RIGHT: categorías + especificaciones -->
+    <aside class="sidebar-right">
+      <div>
+        <h3 style="color:#d81e27; text-transform:uppercase; font-size:13px; margin-bottom:12px">Categorías</h3>
+        <div class="categories" id="categories">
+          <!-- botones poblados por JS -->
+        </div>
+      </div>
+
+      <div class="specs" id="specsBox" aria-live="polite">
+        <h4>Especificaciones</h4>
+        <div class="spec-row"><div class="spec-label">Capacidad</div><div class="spec-val" id="specCapacity">4.5 m³</div></div>
+        <div class="spec-row"><div class="spec-label">Potencia</div><div class="spec-val" id="specPower">525 HP</div></div>
+        <div class="spec-row"><div class="spec-label">Peso operativo</div><div class="spec-val" id="specWeight">85,000 kg</div></div>
+        <div class="spec-row"><div class="spec-label">Aplicación</div><div class="spec-val" id="specApplication">Minería a cielo abierto</div></div>
+      </div>
+    </aside>
+  </div>
+
+<div class="page-indicator" id="pageIndicator">02 <span>/ 08</span></div>
+
+  <script>
+    // Datos de máquinas (añadimos "group" para mapear a Maquinaria/Equipamiento/Otros)
+    const machines = [
+      { name:"Excavadora hidráulica", group:"Maquinaria", category:"Excavación", image:"../assets/maquina.png", description:"Excavadora de alto rendimiento diseñada para operaciones mineras de gran escala. Ideal para movimiento de tierra, carga de camiones y extracción.", capacity:"4.5 m³", power:"525 HP", weight:"85,000 kg", application:"Minería a cielo abierto" },
+      { name:"Cargador frontal", group:"Maquinaria", category:"Carga", image:"https://s7d2.scene7.com/is/image/Caterpillar/C10602629", description:"Cargador de ruedas de alta capacidad para operaciones de carga rápida.", capacity:"19 m³", power:"1,739 HP", weight:"231,000 kg", application:"Carga de material" },
+      { name:"Camión minero", group:"Transporte", category:"Transporte", image:"https://s7d2.scene7.com/is/image/Caterpillar/C13348997", description:"Camión ultra clase diseñado para transporte de material pesado en grandes distancias.", capacity:"363 t", power:"4,000 HP", weight:"687,000 kg", application:"Transporte de mineral" },
+      { name:"Perforadora rotativa", group:"Equipamiento", category:"Perforación", image:"https://www.atlascopco.com/content/dam/atlas-copco/construction-technique/surface-and-exploration-drilling/images/product%20images/dth%20rigs/pit%20viper/pit_viper_271_photo_2015.jpg", description:"Equipo de perforación de alto rendimiento para barrenos de voladura.", capacity:"311 mm", power:"783 HP", weight:"95,000 kg", application:"Perforación" },
+      { name:"Pala eléctrica", group:"Maquinaria", category:"Excavación", image:"https://www.komatsu.com/-/media/project/komatsu/images/products/electric-rope-shovels/pc4000-11_1000x1000.png", description:"Pala eléctrica de alto tonelaje para operaciones de carga continua.", capacity:"120 m³", power:"6,200 kW", weight:"980,000 kg", application:"Carga de mineral" },
+      { name:"Bulldozer", group:"Maquinaria", category:"Movimiento de tierra", image:"https://s7d2.scene7.com/is/image/Caterpillar/C13349001", description:"Tractor de orugas de alta potencia para empuje y nivelación.", capacity:"27 m³ hoja", power:"850 HP", weight:"112,000 kg", application:"Empuje y nivelación" },
+      { name:"Motoniveladora", group:"Mantenimiento", category:"Mantenimiento", image:"https://s7d2.scene7.com/is/image/Caterpillar/C13348999", description:"Motoniveladora de precisión para mantenimiento de caminos.", capacity:"7.3 m hoja", power:"525 HP", weight:"64,000 kg", application:"Mantenimiento vial" }
+    ];
+
+    // Extraer grupos únicos y ordenarlos (incluye 'Todas' al inicio)
+    const groups = ["Todas", ...Array.from(new Set(machines.map(m => m.group)))];
+
+    // Estado actual
+    let currentGroup = "Todas";
+    let filteredIndexes = machines.map((_,i)=>i);
+    let currentFilteredIndex = 0; // índice en filteredIndexes
+
+    // Elementos DOM
+    const listEl = document.getElementById('machineryList');
+    const categoriesEl = document.getElementById('categories');
+    const machineImage = document.getElementById('machineImage');
+    const machineName = document.getElementById('machineName');
+    const machineDesc = document.getElementById('machineDesc');
+    const machineCategory = document.getElementById('machineCategory');
+    const specCapacity = document.getElementById('specCapacity');
+    const specPower = document.getElementById('specPower');
+    const specWeight = document.getElementById('specWeight');
+    const specApplication = document.getElementById('specApplication');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const wrapper = document.getElementById('machineWrapper');
+
+    // Poblamos botones de categorías
+    function renderCategories(){
+      categoriesEl.innerHTML = "";
+      groups.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-btn' + (g === currentGroup ? ' active' : '');
+        btn.textContent = g;
+        btn.onclick = () => { filterByGroup(g); };
+        categoriesEl.appendChild(btn);
+      });
+    }
+
+    // Poblamos lista izquierda según filteredIndexes
+    function renderList(){
+      listEl.innerHTML = "";
+      if (filteredIndexes.length === 0){
+        const li = document.createElement('li');
+        li.className = 'empty-msg';
+        li.textContent = 'No hay elementos en esta categoría.';
+        listEl.appendChild(li);
+        return;
+      }
+      filteredIndexes.forEach((machineIdx, pos) => {
+        const m = machines[machineIdx];
+        const li = document.createElement('li');
+        li.dataset.idx = machineIdx;
+        li.innerHTML = `<span>${m.name}<span class="small-model">${m.category}</span></span>`;
+        if (pos === currentFilteredIndex) li.classList.add('active');
+        li.onclick = () => {
+          // saltar a este elemento (pos dentro de filteredIndexes)
+          currentFilteredIndex = filteredIndexes.indexOf(machineIdx);
+          updateToCurrentFiltered();
+        };
+        listEl.appendChild(li);
+      });
+    }
+
+    // Filtra por grupo y selecciona el primer elemento
+    function filterByGroup(group){
+      currentGroup = group;
+      // recalcula filteredIndexes
+      if (group === "Todas") filteredIndexes = machines.map((_,i)=>i);
+      else filteredIndexes = machines.map((m,i)=> m.group === group ? i : -1).filter(i => i !== -1);
+
+      currentFilteredIndex = 0;
+      renderCategories();
+      renderList();
+      updateToCurrentFiltered();
+    }
+
+    // Actualiza el DOM al elemento actual (con animación)
+    function updateToCurrentFiltered(){
+      if (filteredIndexes.length === 0){
+        // limpiar vista
+        machineImage.src = "";
+        machineName.textContent = "";
+        machineDesc.textContent = "";
+        machineCategory.textContent = currentGroup.toUpperCase();
+        specCapacity.textContent = "-";
+        specPower.textContent = "-";
+        specWeight.textContent = "-";
+        specApplication.textContent = "-";
+        pageIndicator.innerHTML = `00 <span>/ ${String(filteredIndexes.length).padStart(2,'0')}</span>`;
+        return;
+      }
+
+      const globalIndex = filteredIndexes[currentFilteredIndex];
+      const m = machines[globalIndex];
+
+      // animación: fade out -> cambiar contenido -> fade in
+      wrapper.classList.remove('fade-in');
+      wrapper.classList.add('fade-out');
+
+      // esperar la duración de la transición antes de cambiar fuente/texto
+      setTimeout(() => {
+        machineImage.src = m.image;
+        machineName.textContent = m.name;
+        machineDesc.textContent = m.description;
+        machineCategory.textContent = m.category.toUpperCase();
+        specCapacity.textContent = m.capacity;
+        specPower.textContent = m.power;
+        specWeight.textContent = m.weight;
+        specApplication.textContent = m.application;
+
+        // actualizar lista activa (si existe)
+        document.querySelectorAll('.machinery-list li').forEach((li) => li.classList.remove('active'));
+        const listItems = document.querySelectorAll('.machinery-list li');
+        if (listItems[currentFilteredIndex]) listItems[currentFilteredIndex].classList.add('active');
+
+        // actualizar indicador (posición dentro del filtrado)
+        pageIndicator.innerHTML = `${String(currentFilteredIndex+1).padStart(2,'0')} <span>/ ${String(filteredIndexes.length).padStart(2,'0')}</span>`;
+
+        // fade in
+        wrapper.classList.remove('fade-out');
+        wrapper.classList.add('fade-in');
+      }, 260); // 260ms coincide con CSS transitions para un feeling suave
+    }
+
+    // Navegar entre máquinas (prev/next)
+    function changeMachine(delta){
+      if (filteredIndexes.length === 0) return;
+      currentFilteredIndex = (currentFilteredIndex + delta + filteredIndexes.length) % filteredIndexes.length;
+      updateToCurrentFiltered();
+    }
+
+    // Eventos de botones prev/next
+    document.getElementById('prevBtn').addEventListener('click', () => changeMachine(-1));
+    document.getElementById('nextBtn').addEventListener('click', () => changeMachine(1));
+
+    // Keyboard arrows
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') changeMachine(-1);
+      if (e.key === 'ArrowRight') changeMachine(1);
+    });
+
+    // Inicialización
+    renderCategories();
+    filterByGroup('Todas'); // esto renderiza lista y selecciona el primero
+
+  </script>
+</body>
+</html>
