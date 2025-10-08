@@ -69,20 +69,20 @@ window.startScanner = async () => {
       
       // Maquinaria - según el orden de compilación de targets.mind
       // ÍNDICE 0 - Marcador: lamp
-      casco: { path: 'lamp.glb', scale: 0.1, index: 0, rotation: { x: 0, y: 0, z: 0 } },
+      casco: { path: 'lamp.glb', scale: 0.3, index: 0, rotation: { x: 0, y: 0, z: 0 } },
       
       // ÍNDICE 1 - Marcador: pico
-      pico: { path: 'pico.glb', scale: 0.1, index: 1, rotation: { x: 0, y: 0, z: 0 } },
+      pico: { path: 'pico.glb', scale: 0.3, index: 1, rotation: { x: 0, y: 0, z: 0 } },
       
       // ÍNDICE 2 - Marcador: truck
-      camion: { path: 'truck.glb', scale: 0.1, index: 2, rotation: { x: 0, y: 0, z: 0 } },
+      camion: { path: 'truck.glb', scale: 1, index: 2, rotation: { x: 0, y: 0, z: 0 } },
       
       // ÍNDICE 3 - Marcador: tunel
-      excavadora: { path: 'tunel.glb', scale: 0.1, index: 3, rotation: { x: 0, y: 0, z: 0 } },
+      excavadora: { path: 'tunel.glb', scale: 0.3, index: 3, rotation: { x: 0, y: 0, z: 0 } },
       pala: { path: 'tuneldoble.glb', scale: 0.1, index: 3, rotation: { x: 0, y: 0, z: 0 } },
       
       // ÍNDICE 4 - Marcador: garras
-      cargador: { path: 'garras.glb', scale: 0.1, index: 4, rotation: { x: 0, y: 0, z: 0 } },
+      cargador: { path: 'garras.glb', scale: 1, index: 4, rotation: { x: 0, y: 0, z: 0 } },
       bulldozer: { path: 'bulldozer.glb', scale: 0.1, index: 4, rotation: { x: 0, y: 0, z: 0 } },
       
       // Otros (asignar a índices existentes)
