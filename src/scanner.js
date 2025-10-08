@@ -54,33 +54,48 @@ window.startScanner = async () => {
     updateStatus('Solicitando acceso a la cámara...');
 
     // Mapeo de marcadores a modelos
-    // NOTA: El archivo targets.mind solo tiene 4 targets de dinosaurios (índices 0-3)
+    // IMPORTANTE: Los índices corresponden al ORDEN en que subiste las imágenes al compilador MindAR:
+    // Índice 0 = lamp
+    // Índice 1 = pico
+    // Índice 2 = truck
+    // Índice 3 = tunel
+    // Índice 4 = garras
     const modelMapping = {
-      // Dinosaurios - usan sus propios marcadores
-      dino1_brachiosaurus: { path: 'brachiosaurus.glb', scale: 0.1, index: 0 },
-      dino2_trex: { path: 'trex.glb', scale: 0.1, index: 1 },
-      dino3_triceratops: { path: 'triceratops.glb', scale: 1, index: 2 },
-      dino4_velociraptor: { path: 'velociraptor.glb', scale: 0.1, index: 3 },
+      // Dinosaurios originales (si los quieres mantener para pruebas)
+      dino1_brachiosaurus: { path: 'brachiosaurus.glb', scale: 0.1, index: 0, rotation: { x: 0, y: 0, z: 0 } },
+      dino2_trex: { path: 'trex.glb', scale: 0.1, index: 1, rotation: { x: 0, y: 0, z: 0 } },
+      dino3_triceratops: { path: 'triceratops.glb', scale: 1.0, index: 2, rotation: { x: 0, y: 0, z: 0 } },
+      dino4_velociraptor: { path: 'velociraptor.glb', scale: 0.1, index: 3, rotation: { x: 0, y: 0, z: 0 } },
       
-      // Maquinaria - usar marcadores de dinosaurios como demostración
-      // (Necesitarás crear nuevos marcadores y targets.mind para maquinaria real)
-      excavadora: { path: 'trex.glb', scale: 0.15, index: 1 },
-      cargador: { path: 'brachiosaurus.glb', scale: 0.15, index: 0 },
-      camion: { path: 'velociraptor.glb', scale: 0.15, index: 3 },
-      perforadora: { path: 'triceratops.glb', scale: 0.8, index: 2 },
-      pala: { path: 'trex.glb', scale: 0.15, index: 1 },
-      bulldozer: { path: 'brachiosaurus.glb', scale: 0.15, index: 0 },
-      motoniveladora: { path: 'triceratops.glb', scale: 0.8, index: 2 },
-      casco: { path: 'velociraptor.glb', scale: 0.15, index: 3 },
-      pico: { path: 'trex.glb', scale: 0.15, index: 1 }
+      // Maquinaria - según el orden de compilación de targets.mind
+      // ÍNDICE 0 - Marcador: lamp
+      casco: { path: 'lamp.glb', scale: 0.1, index: 0, rotation: { x: 0, y: 0, z: 0 } },
+      
+      // ÍNDICE 1 - Marcador: pico
+      pico: { path: 'pico.glb', scale: 0.1, index: 1, rotation: { x: 0, y: 0, z: 0 } },
+      
+      // ÍNDICE 2 - Marcador: truck
+      camion: { path: 'truck.glb', scale: 0.1, index: 2, rotation: { x: 0, y: 0, z: 0 } },
+      
+      // ÍNDICE 3 - Marcador: tunel
+      excavadora: { path: 'tunel.glb', scale: 0.1, index: 3, rotation: { x: 0, y: 0, z: 0 } },
+      pala: { path: 'tuneldoble.glb', scale: 0.1, index: 3, rotation: { x: 0, y: 0, z: 0 } },
+      
+      // ÍNDICE 4 - Marcador: garras
+      cargador: { path: 'garras.glb', scale: 0.1, index: 4, rotation: { x: 0, y: 0, z: 0 } },
+      bulldozer: { path: 'bulldozer.glb', scale: 0.1, index: 4, rotation: { x: 0, y: 0, z: 0 } },
+      
+      // Otros (asignar a índices existentes)
+      perforadora: { path: 'perforadora.glb', scale: 1.0, index: 3, rotation: { x: 0, y: 0, z: 0 } },
+      motoniveladora: { path: 'motoniveladora.glb', scale: 1.0, index: 4, rotation: { x: 0, y: 0, z: 0 } }
     };
 
-    const modelConfig = modelMapping[markerType] || { path: 'trex.glb', scale: 0.15, index: 1 };
+    const modelConfig = modelMapping[markerType] || { path: 'trex.glb', scale: 0.1, index: 1, rotation: { x: 0, y: 0, z: 0 } };
 
     // Crear instancia de MindAR
     mindarThree = new MindARThree({
       container: document.querySelector("#ar-container"),
-      imageTargetSrc: `${import.meta.env.BASE_URL}mind/targets.mind`,
+      imageTargetSrc: `${import.meta.env.BASE_URL}target/targets.mind`,
     });
 
     const { renderer, scene, camera } = mindarThree;
@@ -127,7 +142,20 @@ window.startScanner = async () => {
       model3D = gltf.scene;
       model3D.scale.set(modelConfig.scale, modelConfig.scale, modelConfig.scale);
       model3D.position.set(0, 0, 0);
+      
+      // Aplicar rotación inicial si está configurada
+      if (modelConfig.rotation) {
+        model3D.rotation.set(
+          modelConfig.rotation.x,
+          modelConfig.rotation.y,
+          modelConfig.rotation.z
+        );
+      }
+      
       console.log('✅ Modelo configurado y listo');
+      console.log('   - Escala:', modelConfig.scale);
+      console.log('   - Posición:', model3D.position);
+      console.log('   - Rotación:', model3D.rotation);
       
     } catch (modelError) {
       console.warn('⚠️ No se pudo cargar el modelo, usando geometría simple', modelError);
@@ -142,26 +170,59 @@ window.startScanner = async () => {
       console.log('📦 Geometría simple creada');
     }
 
-    // Añadir modelo al anchor
-    const anchor = mindarThree.addAnchor(modelConfig.index);
-    anchor.group.add(model3D);
+    // Crear TODOS los anchors (5 targets en targets.mind)
+    // Esto es CRÍTICO: MindAR requiere que se creen todos los anchors
+    console.log('🎯 Creando 5 anchors para los 5 targets (lamp, pico, truck, tunel, garras)...');
+    const anchors = [
+      mindarThree.addAnchor(0), // lamp
+      mindarThree.addAnchor(1), // pico
+      mindarThree.addAnchor(2), // truck
+      mindarThree.addAnchor(3), // tunel
+      mindarThree.addAnchor(4), // garras
+    ];
+    console.log('✅ Anchors creados:', anchors.length);
 
-    // Eventos de detección
-    anchor.onTargetFound = () => {
-      console.log('✅ Marcador detectado');
-      updateStatus('Modelo detectado ✓');
-      if (modelInfoEl) {
-        modelInfoEl.classList.add('active');
-      }
-    };
+    // Añadir el modelo al anchor correspondiente según el índice
+    const targetAnchor = anchors[modelConfig.index];
+    if (!targetAnchor) {
+      console.error(`❌ No se pudo obtener anchor para índice ${modelConfig.index}`);
+      throw new Error(`Anchor index ${modelConfig.index} no válido`);
+    }
+    
+    targetAnchor.group.add(model3D);
+    console.log(`📍 Modelo agregado al anchor ${modelConfig.index}`);
+    console.log('📊 Estado del anchor:', {
+      index: modelConfig.index,
+      children: targetAnchor.group.children.length,
+      modelo: model3D.type
+    });
 
-    anchor.onTargetLost = () => {
-      console.log('❌ Marcador perdido');
-      updateStatus('Buscando marcador...');
-      if (modelInfoEl) {
-        modelInfoEl.classList.remove('active');
-      }
-    };
+    // Configurar eventos para TODOS los anchors (para debugging)
+    anchors.forEach((anchor, idx) => {
+      anchor.onTargetFound = () => {
+        console.log(`✅ TARGET ${idx} DETECTADO`);
+        if (idx === modelConfig.index) {
+          console.log(`   ↳ Este es el target correcto para ${markerType}`);
+          updateStatus('Modelo detectado ✓');
+          if (modelInfoEl) {
+            modelInfoEl.classList.add('active');
+          }
+        } else {
+          console.log(`   ↳ Target incorrecto. Esperando target ${modelConfig.index} para ${markerType}`);
+          updateStatus(`Marcador ${idx} detectado (usar marcador ${modelConfig.index})`);
+        }
+      };
+
+      anchor.onTargetLost = () => {
+        console.log(`❌ TARGET ${idx} PERDIDO`);
+        if (idx === modelConfig.index) {
+          updateStatus('Buscando marcador...');
+          if (modelInfoEl) {
+            modelInfoEl.classList.remove('active');
+          }
+        }
+      };
+    });
 
     updateStatus('Iniciando experiencia AR...');
 
