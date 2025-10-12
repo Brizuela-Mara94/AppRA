@@ -4,11 +4,18 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // Variables globales
 let mindarThree = null;
+let arToolkitSource = null;
+let arToolkitContext = null;
+let markerRoot = null;
+let arjsScene = null; // Scene de AR.js
+let arjsCamera = null; // Camera de AR.js
+let arjsRenderer = null; // Renderer de AR.js
 let isRunning = false;
 let model3D = null;
 let isRotating = false;
 window.isModelLocked = false;
 window.persistentModel = null;
+let useARjs = false; // Flag para saber qué sistema estamos usando
 
 window.startScanner = async () => {
   if (isRunning && mindarThree) {
@@ -19,6 +26,7 @@ window.startScanner = async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const markerType = urlParams.get('marker') || 'excavadora';
   const machineName = urlParams.get('name') || 'Maquinaria';
+  const usePattern = urlParams.get('usePattern') === 'true'; // Modo marcador individual PNG
   
   // Update HTML elements
   const modelNameEl = document.getElementById('modelName');
@@ -93,16 +101,57 @@ window.startScanner = async () => {
 
     const modelConfig = modelMapping[markerType] || { path: 'trex.glb', scale: 0.1, index: 1, rotation: { x: 0, y: 0, z: 0 } };
 
+    // Mapeo de marcadores a barcode IDs (para AR.js)
+    const barcodeMapping = {
+      casco: 20,        // lamp.png = barcode 20
+      pico: 21,         // pico.png = barcode 21
+      truck: 22,        // truck.png = barcode 22
+      tunel: 23,        // tunel.png = barcode 23
+      garras: 24,       // carga.png = barcode 24
+      perforadora: 25,  // perforadora = barcode 25
+      camion: 26        // garras = barcode 26
+    };
+
+    // Determinar qué sistema de marcadores usar
+    let mindarConfig;
+    let useSingleMarker = false;
+    
+    if (usePattern) {
+      // ========== MODO AR.JS CON BARCODE MARKERS ==========
+      console.log('🎯 Usando AR.js con barcode markers');
+      const barcodeValue = barcodeMapping[markerType];
+      if (!barcodeValue) {
+        console.error('❌ No se encontró barcode para:', markerType);
+        updateStatus('Error: Marcador no encontrado');
+        return;
+      }
+      
+      console.log(`📦 Barcode seleccionado: ${barcodeValue} para ${markerType}`);
+      updateStatus(`Iniciando AR.js (Barcode ${barcodeValue})...`);
+      useARjs = true;
+      
+      // Inicializar AR.js con barcode markers
+      await initARjs(barcodeValue, modelConfig, machineName, updateStatus, showError, loadingEl, modelInfoEl);
+      return; // Salir aquí, AR.js maneja todo de forma diferente
+      
+    } else {
+      // ========== MODO MINDAR CON TARGETS.MIND ==========
+      console.log('🎯 Usando marcadores compilados (.mind)');
+      mindarConfig = {
+        container: document.querySelector("#ar-container"),
+        imageTargetSrc: `${import.meta.env.BASE_URL}target/targets.mind`,
+        filterMinCF: 0.0001,
+        filterBeta: 10,
+        uiLoading: "no",
+        uiScanning: "no",
+        uiError: "no",
+      };
+      updateStatus('Usando marcadores compilados (.mind)...');
+      useARjs = false;
+    }
+
     // Crear instancia de MindAR
-    mindarThree = new MindARThree({
-      container: document.querySelector("#ar-container"),
-      imageTargetSrc: `${import.meta.env.BASE_URL}target/targets.mind`,
-      filterMinCF: 0.0001,  // Reduce el jitter/temblor
-      filterBeta: 10,       // Suaviza el seguimiento
-      uiLoading: "no",
-      uiScanning: "no",
-      uiError: "no",
-    });
+    mindarThree = new MindARThree(mindarConfig);
 
     const { renderer, scene, camera } = mindarThree;
     
@@ -179,22 +228,34 @@ window.startScanner = async () => {
       console.log('📦 Geometría simple creada');
     }
 
-    // Crear TODOS los anchors (7 targets en targets.mind)
-    // Esto es CRÍTICO: MindAR requiere que se creen todos los anchors
-    console.log('🎯 Creando 7 anchors para los 7 targets (lamp, pico, truck, tunel, garras, perforadora, carga)...');
-    const anchors = [
-      mindarThree.addAnchor(0), // lamp
-      mindarThree.addAnchor(1), // pico
-      mindarThree.addAnchor(2), // truck
-      mindarThree.addAnchor(3), // tunel
-      mindarThree.addAnchor(4), // garras
-      mindarThree.addAnchor(5), // perforadora
-      mindarThree.addAnchor(6), // carga
-    ];
-    console.log('✅ Anchors creados:', anchors.length);
-
-    // Añadir el modelo al anchor correspondiente según el índice
-    const targetAnchor = anchors[modelConfig.index];
+    // Crear anchors según el modo
+    let anchors = [];
+    let targetAnchor = null;
+    
+    if (useSingleMarker) {
+      // Modo marcador individual: solo crear un anchor (índice 0)
+      console.log('🎯 Creando 1 anchor para marcador individual PNG...');
+      targetAnchor = mindarThree.addAnchor(0);
+      anchors = [targetAnchor];
+      console.log('✅ Anchor individual creado');
+    } else {
+      // Modo marcadores compilados: crear todos los anchors
+      console.log('🎯 Creando 7 anchors para los 7 targets (lamp, pico, truck, tunel, garras, perforadora, carga)...');
+      anchors = [
+        mindarThree.addAnchor(0), // lamp
+        mindarThree.addAnchor(1), // pico
+        mindarThree.addAnchor(2), // truck
+        mindarThree.addAnchor(3), // tunel
+        mindarThree.addAnchor(4), // garras
+        mindarThree.addAnchor(5), // perforadora
+        mindarThree.addAnchor(6), // carga
+      ];
+      console.log('✅ Anchors creados:', anchors.length);
+      
+      // Seleccionar el anchor correcto según el índice
+      targetAnchor = anchors[modelConfig.index];
+    }
+    
     if (!targetAnchor) {
       console.error(`❌ No se pudo obtener anchor para índice ${modelConfig.index}`);
       throw new Error(`Anchor index ${modelConfig.index} no válido`);
@@ -205,9 +266,10 @@ window.startScanner = async () => {
     // Guardar referencia al anchor para mantenerlo visible
     window.targetAnchorGroup = targetAnchor.group;
     
-    console.log(`📍 Modelo agregado al anchor ${modelConfig.index}`);
+    console.log(`📍 Modelo agregado al anchor ${useSingleMarker ? 'único' : modelConfig.index}`);
     console.log('📊 Estado del anchor:', {
-      index: modelConfig.index,
+      mode: useSingleMarker ? 'PNG individual' : 'Compilado .mind',
+      index: useSingleMarker ? 0 : modelConfig.index,
       children: targetAnchor.group.children.length,
       modelo: model3D.type
     });
@@ -216,12 +278,17 @@ window.startScanner = async () => {
     let hasBeenDetected = false;
     let persistentModel = null;
     
-    // Configurar eventos para TODOS los anchors (con tracking persistente automático)
+    // Configurar eventos para los anchors (con tracking persistente automático)
     anchors.forEach((anchor, idx) => {
       anchor.onTargetFound = () => {
         console.log(`✅ TARGET ${idx} DETECTADO`);
-        if (idx === modelConfig.index) {
-          console.log(`   ↳ Este es el target correcto para ${markerType}`);
+        
+        // En modo marcador individual, siempre es el correcto (idx 0)
+        // En modo compilado, verificar el índice
+        const isCorrectMarker = useSingleMarker || (idx === modelConfig.index);
+        
+        if (isCorrectMarker) {
+          console.log(`   ↳ Este es el target correcto para ${markerType} (${useSingleMarker ? 'PNG' : 'compilado'})`);
           updateStatus('Modelo detectado ✓ - Puedes retirar el marcador');
           if (modelInfoEl) {
             modelInfoEl.classList.add('active');
@@ -263,6 +330,13 @@ window.startScanner = async () => {
           } else {
             console.warn('⚠️ Botón de captura no encontrado en el DOM');
           }
+          
+          // Mostrar botón de resetear escáner
+          const resetScanBtn = document.getElementById('resetScanBtn');
+          if (resetScanBtn) {
+            resetScanBtn.classList.add('visible');
+            console.log('🔄 Botón de resetear escáner activado');
+          }
         } else {
           console.log(`   ↳ Target incorrecto. Esperando target ${modelConfig.index} para ${markerType}`);
           updateStatus(`Marcador ${idx} detectado (usar marcador ${modelConfig.index})`);
@@ -271,7 +345,8 @@ window.startScanner = async () => {
 
       anchor.onTargetLost = () => {
         console.log(`❌ TARGET ${idx} PERDIDO`);
-        if (idx === modelConfig.index && hasBeenDetected) {
+        const isCorrectMarker = useSingleMarker || (idx === modelConfig.index);
+        if (isCorrectMarker && hasBeenDetected) {
           console.log('   ↳ Modelo persistente sigue visible en la escena');
           updateStatus('Modelo visible - Ya no necesitas el marcador ✓');
         }
@@ -328,9 +403,26 @@ window.startScanner = async () => {
 };
 
 const stopAR = async () => {
-  if (mindarThree && isRunning) {
-    isRunning = false;
-
+  isRunning = false;
+  
+  if (useARjs) {
+    // Detener AR.js
+    try {
+      if (arToolkitSource) {
+        const video = arToolkitSource.domElement;
+        if (video && video.srcObject) {
+          video.srcObject.getTracks().forEach(track => track.stop());
+        }
+      }
+      arToolkitSource = null;
+      arToolkitContext = null;
+      markerRoot = null;
+      console.log('✅ AR.js detenido');
+    } catch (error) {
+      console.error('Error deteniendo AR.js:', error);
+    }
+  } else if (mindarThree) {
+    // Detener MindAR
     try {
       await mindarThree.stop();
 
@@ -344,9 +436,9 @@ const stopAR = async () => {
         mindarThree.renderer.setAnimationLoop(null);
         mindarThree.renderer.clear();
       }
-
+      console.log('✅ MindAR detenido');
     } catch (error) {
-      console.error('Error deteniendo AR:', error);
+      console.error('Error deteniendo MindAR:', error);
     }
   }
 };
@@ -680,11 +772,25 @@ function captureScreen() {
   captureBtn.classList.add('capturing');
   
   try {
-    if (!mindarThree || !mindarThree.renderer || !mindarThree.scene || !mindarThree.camera) {
-      throw new Error('MindAR no está inicializado correctamente');
+    let renderer, scene, camera;
+    
+    if (useARjs) {
+      // Usar AR.js
+      if (!arjsRenderer || !arjsScene || !arjsCamera) {
+        throw new Error('AR.js no está inicializado correctamente');
+      }
+      renderer = arjsRenderer;
+      scene = arjsScene;
+      camera = arjsCamera;
+    } else {
+      // Usar MindAR
+      if (!mindarThree || !mindarThree.renderer || !mindarThree.scene || !mindarThree.camera) {
+        throw new Error('MindAR no está inicializado correctamente');
+      }
+      renderer = mindarThree.renderer;
+      scene = mindarThree.scene;
+      camera = mindarThree.camera;
     }
-
-    const { renderer, scene, camera } = mindarThree;
     
     // Obtener el modelo activo (persistente o original)
     const activeModel = window.persistentModel || model3D;
@@ -826,5 +932,312 @@ function captureScreen() {
   }
 }
 
+// ========== FUNCIONES PARA AR.JS ==========
+async function initARjs(barcodeValue, modelConfig, machineName, updateStatus, showError, loadingEl, modelInfoEl) {
+  console.log('🚀 Inicializando AR.js con barcode:', barcodeValue);
+  
+  // Esperar a que THREEx se cargue (máximo 10 segundos)
+  let attempts = 0;
+  while (typeof THREEx === 'undefined' && attempts < 100) {
+    console.log('⏳ Esperando a que AR.js se cargue... intento', attempts + 1);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    attempts++;
+  }
+  
+  // Verificar que THREEx esté disponible
+  if (typeof THREEx === 'undefined' || typeof THREEx.ArToolkitSource === 'undefined') {
+    const msg = 'No se detectó la API THREEx.ArToolkitSource — verifica que AR.js esté cargado correctamente.';
+    console.error('❌', msg);
+    if (updateStatus) updateStatus('Error: AR.js no disponible');
+    if (showError) showError('No se pudo cargar AR.js. Verifica tu conexión a internet y recarga la página.');
+    return;
+  }
+  
+  console.log('✅ THREEx disponible:', THREEx);
+  
+  try {
+    if (updateStatus) updateStatus(`Inicializando escáner barcode ${barcodeValue}...`);
+    
+    // Limpiar container
+    const container = document.querySelector('#ar-container');
+    if (container) container.innerHTML = '';
+    
+    // THREE.js básico
+    arjsScene = new THREE.Scene();
+    arjsCamera = new THREE.Camera();
+    arjsScene.add(arjsCamera);
+    
+    arjsRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    arjsRenderer.setClearColor(new THREE.Color('lightgrey'), 0);
+    arjsRenderer.setSize(window.innerWidth, window.innerHeight);
+    arjsRenderer.domElement.style.position = 'fixed';
+    arjsRenderer.domElement.style.top = '0';
+    arjsRenderer.domElement.style.left = '0';
+    arjsRenderer.domElement.style.zIndex = '1';
+    arjsRenderer.domElement.classList.add('__arjs_renderer');
+    
+    if (container) {
+      // Asegurarnos de no duplicar canvas
+      const existing = container.querySelector('canvas.__arjs_renderer');
+      if (existing) {
+        existing.parentNode.replaceChild(arjsRenderer.domElement, existing);
+      } else {
+        container.appendChild(arjsRenderer.domElement);
+      }
+    }
+    
+    // Fuente de video (webcam)
+    arToolkitSource = new THREEx.ArToolkitSource({ sourceType: 'webcam' });
+    
+    function onResize() {
+      try {
+        arToolkitSource.onResizeElement();
+        arToolkitSource.copyElementSizeTo(arjsRenderer.domElement);
+        if (arToolkitContext && arToolkitContext.arController) {
+          arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
+        }
+      } catch (e) {
+        console.warn('⚠️ onResize error:', e);
+      }
+    }
+    
+    // Inicializar fuente (promisificado)
+    await new Promise((resolve) => {
+      arToolkitSource.init(function onReady() {
+        console.log('✅ Cámara lista');
+        if (updateStatus) updateStatus('Cámara lista, inicializando contexto AR...');
+        onResize();
+        resolve();
+      });
+    });
+    
+    window.addEventListener('resize', onResize);
+    
+    // Contexto AR con soporte para barcode 3x3
+    arToolkitContext = new THREEx.ArToolkitContext({
+      cameraParametersUrl: 'https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/data/data/camera_para.dat',
+      detectionMode: 'mono',
+      matrixCodeType: '3x3'
+    });
+    
+    await new Promise((resolve) => {
+      arToolkitContext.init(function onCompleted() {
+        arjsCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+        console.log('✅ Contexto AR listo');
+        if (updateStatus) updateStatus('Contexto AR listo. Buscando marcador...');
+        resolve();
+      });
+    });
+    
+    // Grupo que representará al marcador
+    markerRoot = new THREE.Group();
+    arjsScene.add(markerRoot);
+    
+    // Controles del marcador: barcode
+    const markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+      type: 'barcode',
+      barcodeValue: barcodeValue
+    });
+    
+    console.log(`🎯 Marcador barcode ${barcodeValue} configurado`);
+    
+    // Cargar modelo 3D
+    const loader = new GLTFLoader();
+    const modelPath = `${import.meta.env.BASE_URL}models/${modelConfig.path}`;
+    
+    console.log('📦 Cargando modelo:', modelPath);
+    
+    try {
+      const gltf = await new Promise((resolve, reject) => {
+        loader.load(modelPath, resolve, undefined, reject);
+      });
+      
+      model3D = gltf.scene;
+      
+      // AR.js usa unidades diferentes
+      const arjsScale = modelConfig.scale * 1.5;
+      model3D.scale.set(arjsScale, arjsScale, arjsScale);
+      
+      if (modelConfig.rotation) {
+        model3D.rotation.set(
+          modelConfig.rotation.x,
+          modelConfig.rotation.y,
+          modelConfig.rotation.z
+        );
+      }
+      
+      model3D.position.set(0, arjsScale / 2, 0);
+      model3D.visible = true;
+      
+      markerRoot.add(model3D);
+      console.log('✅ Modelo añadido:', modelPath);
+    } catch (err) {
+      console.warn('⚠️ No se pudo cargar modelo, usando cubo de prueba', err);
+      
+      // Cubo de fallback
+      const cubeSize = 0.5;
+      const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+      const material = new THREE.MeshNormalMaterial({ transparent: true, opacity: 0.9 });
+      model3D = new THREE.Mesh(geometry, material);
+      model3D.position.y = cubeSize / 2;
+      markerRoot.add(model3D);
+    }
+    
+    // Luz
+    const light = new THREE.DirectionalLight(0xffffff, 0.9);
+    light.position.set(0, 4, 0);
+    arjsScene.add(light);
+    arjsScene.add(new THREE.AmbientLight(0x666666));
+    
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (modelInfoEl) modelInfoEl.style.display = 'block';
+    if (updateStatus) updateStatus(`Buscando marcador ${barcodeValue}...`);
+    
+    // Configurar controles táctiles
+    setupTouchControls(model3D);
+    
+    // Loop de animación
+    isRunning = true;
+    let prevVisible = false;
+    
+    function animate() {
+      if (!isRunning) return;
+      requestAnimationFrame(animate);
+      
+      if (arToolkitSource && arToolkitSource.ready !== false) {
+        try {
+          arToolkitContext.update(arToolkitSource.domElement);
+        } catch (e) {
+          // Silenciar errores de update
+        }
+      }
+      
+      arjsRenderer.render(arjsScene, arjsCamera);
+      
+      // Detectar cambios de visibilidad del marcador
+      const visible = markerRoot.visible;
+      if (visible !== prevVisible) {
+        prevVisible = visible;
+        if (visible) {
+          console.log(`🎯✅ Marcador ${barcodeValue} detectado!`);
+          if (updateStatus) updateStatus(`Marcador ${barcodeValue} detectado ✅`);
+          if (modelInfoEl) modelInfoEl.classList.add('active');
+          
+          // Mostrar botón de captura
+          const captureBtn = document.getElementById('captureBtn');
+          if (captureBtn) captureBtn.style.display = 'flex';
+        } else {
+          console.log(`🎯❌ Marcador ${barcodeValue} perdido`);
+          if (updateStatus) updateStatus(`Buscando marcador ${barcodeValue}...`);
+          if (modelInfoEl) modelInfoEl.classList.remove('active');
+        }
+      }
+    }
+    animate();
+    
+    console.log('🎉 AR.js inicializado correctamente');
+    
+  } catch (error) {
+    console.error('❌ Error inicializando AR.js:', error);
+    if (updateStatus) updateStatus('Error al iniciar AR.js');
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (showError) showError('No se pudo inicializar el sistema AR: ' + error.message);
+  }
+}
+
 // Export stopAR function for external use
 window.stopAR = stopAR;
+
+// Configurar botón de resetear escáner (cuando el DOM esté listo)
+document.addEventListener('DOMContentLoaded', () => {
+  const resetScanBtn = document.getElementById('resetScanBtn');
+  if (resetScanBtn) {
+    resetScanBtn.addEventListener('click', async () => {
+      console.log('🔄 Reseteando escáner...');
+      
+      try {
+        // Detener MindAR primero
+        if (mindarThree) {
+          await mindarThree.stop();
+          console.log('✅ MindAR detenido');
+        }
+        
+        // Limpiar completamente la escena
+        if (scene) {
+          // Eliminar el modelo persistente si existe
+          if (window.persistentModel) {
+            scene.remove(window.persistentModel);
+            // Liberar recursos del modelo
+            if (window.persistentModel.traverse) {
+              window.persistentModel.traverse((child) => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                  if (Array.isArray(child.material)) {
+                    child.material.forEach(mat => mat.dispose());
+                  } else {
+                    child.material.dispose();
+                  }
+                }
+              });
+            }
+            window.persistentModel = null;
+            console.log('✅ Modelo persistente eliminado y liberado');
+          }
+          
+          // Limpiar todos los objetos de la escena
+          while(scene.children.length > 0) { 
+            const child = scene.children[0];
+            scene.remove(child);
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+              if (Array.isArray(child.material)) {
+                child.material.forEach(mat => mat.dispose());
+              } else {
+                child.material.dispose();
+              }
+            }
+          }
+          console.log('✅ Escena limpiada completamente');
+        }
+        
+        // Limpiar variables globales
+        window.isModelLocked = false;
+        window.currentModel = null;
+        window.hasBeenDetected = {};
+        
+        // Ocultar todos los elementos de UI
+        const captureBtn = document.getElementById('captureBtn');
+        const statusTextEl = document.getElementById('statusText');
+        const modelInfoEl = document.getElementById('modelInfo');
+        const modelNameEl = document.getElementById('modelName');
+        
+        if (captureBtn) captureBtn.style.display = 'none';
+        if (statusTextEl) statusTextEl.textContent = 'Reiniciando escáner...';
+        if (modelInfoEl) {
+          modelInfoEl.classList.remove('active');
+          modelInfoEl.style.display = 'none';
+        }
+        if (modelNameEl) modelNameEl.textContent = '';
+        
+        // Ocultar botón de resetear
+        resetScanBtn.classList.remove('visible');
+        
+        console.log('🔄 Recargando página para reiniciar...');
+        
+        // Recargar la página forzando limpieza de caché
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 300);
+        
+      } catch (error) {
+        console.error('❌ Error al resetear:', error);
+        // Si hay error, recargar de todos modos
+        window.location.reload(true);
+      }
+    });
+    
+    console.log('✅ Botón de resetear escáner configurado');
+  } else {
+    console.warn('⚠️ No se encontró el botón de resetear (#resetScanBtn)');
+  }
+});

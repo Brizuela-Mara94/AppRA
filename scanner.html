@@ -5,8 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>MiningTech AR - Visor de Realidad Aumentada</title>
 
-  <!-- ES6 Module import -->
-  <script type="module" src="/src/scanner.js"></script>
+
+
+  <!-- 1. Cargar Three.js desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"></script>
+  
+  <!-- 2. Cargar AR.js para Three.js (threex) desde CDN -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/three.js/build/ar-threex.js"></script>
+  
+  <!-- 3. Cargar tu script como módulo al final -->
+  <script type="module" src="/src/scanner.js" defer></script>
   
    <style>
     * {
@@ -533,6 +541,43 @@
       pointer-events: none;
     }
 
+    /* Botón de resetear escáner */
+    .reset-scan-btn {
+      position: fixed;
+      bottom: 100px;
+      left: 20px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      background: rgba(216,30,39,0.9);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(216,30,39,0.4);
+    }
+
+    .reset-scan-btn.visible {
+      display: flex;
+    }
+
+    .reset-scan-btn:hover {
+      background: rgba(216,30,39,1);
+      border-color: #fff;
+      transform: scale(1.05);
+    }
+
+    .reset-scan-btn:active {
+      transform: scale(0.95);
+    }
+
     @media (max-width: 768px) {
       .scanner-frame {
         width: 80vmin;
@@ -554,6 +599,12 @@
         height: 56px;
         font-size: 26px;
       }
+      .reset-scan-btn {
+        bottom: 90px;
+        left: 16px;
+        padding: 10px 20px;
+        font-size: 13px;
+      }
     }
 
     @media (max-width: 1024px) {
@@ -565,6 +616,12 @@
       }
     }
 
+    @media (min-width: 1025px) {
+      .capture-btn-mobile {
+        display: none;
+      }
+    }
+
     @media (max-width: 480px) {
       .capture-btn-mobile {
         bottom: 80px;
@@ -572,6 +629,12 @@
         width: 52px;
         height: 52px;
         font-size: 24px;
+      }
+      .reset-scan-btn {
+        bottom: 80px;
+        left: 12px;
+        padding: 8px 16px;
+        font-size: 12px;
       }
     }
   </style>
@@ -615,6 +678,13 @@
     <div class="spinner"></div>
     <div style="color: #d81e27; font-size: 14px; font-weight: 600;">Iniciando AR...</div>
   </div>
+
+  <!-- Reset Scan Button -->
+  <button class="reset-scan-btn" id="resetScanBtn">
+    <span>🔄</span>
+    <span>Escanear otro</span>
+  </button>
+
   <script type="module">
     // Initialize scanner on page load
     window.addEventListener('load', () => {

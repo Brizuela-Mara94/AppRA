@@ -262,6 +262,52 @@
       box-shadow: 0 2px 10px rgba(216,30,39,0.4);
     }
 
+    /* Selector de modo AR */
+    .ar-mode-selector {
+      margin-top: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 1.0s forwards;
+    }
+
+    .mode-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .mode-label:hover {
+      background: rgba(216,30,39,0.1);
+      border-color: rgba(216,30,39,0.3);
+    }
+
+    .mode-label input[type="radio"] {
+      margin: 0;
+      cursor: pointer;
+      accent-color: #d81e27;
+    }
+
+    .mode-label input[type="radio"]:checked + .mode-text {
+      color: #d81e27;
+      font-weight: 600;
+    }
+
+    .mode-text {
+      font-size: 12px;
+      color: #9a9a9a;
+      transition: all 0.3s ease;
+    }
+
     .page-indicator{ 
       position:fixed; 
       bottom:36px; 
@@ -342,6 +388,16 @@
         <div class="spec-row"><div class="spec-label">Peso operativo</div><div class="spec-val" id="specWeight">85,000 kg</div></div>
         <div class="spec-row"><div class="spec-label">Aplicación</div><div class="spec-val" id="specApplication">Minería a cielo abierto</div></div>
         
+        <div class="ar-mode-selector">
+          <label class="mode-label">
+            <input type="radio" name="arMode" value="mindar" checked id="modeMindAR">
+            <span class="mode-text">📦 MindAR (Marcadores compilados)</span>
+          </label>
+          <label class="mode-label">
+            <input type="radio" name="arMode" value="arjs" id="modeARjs">
+            <span class="mode-text">� AR.js (Códigos de barras)</span>
+          </label>
+        </div>
         <button class="ar-btn" id="arBtn">Ver en Realidad Aumentada</button>
       </div>
     </aside>
@@ -501,9 +557,20 @@
     // Detener inmediatamente el stream (solo era para obtener permiso)
     stream.getTracks().forEach(track => track.stop());
 
-    // ✅ Paso 2: Si se otorgó el permiso, continuar al escáner
+    // ✅ Paso 2: Leer el modo AR seleccionado
+    const selectedMode = document.querySelector('input[name="arMode"]:checked').value;
     const m = machines[filteredIndexes[currentFilteredIndex]];
-    const url = `scanner.html?marker=${m.arMarker}&name=${encodeURIComponent(m.name)}`;
+
+    // ✅ Paso 3: Redirigir al escáner correspondiente
+    let url;
+    if (selectedMode === 'mindar') {
+      // Usar scanner.html para MindAR (marcadores compilados)
+      url = `scanner.html?marker=${m.arMarker}&name=${encodeURIComponent(m.name)}`;
+    } else if (selectedMode === 'arjs') {
+      // Usar arjs-scanner.html para AR.js (códigos de barras)
+      url = `arjs-scanner.html?marker=${m.arMarker}&name=${encodeURIComponent(m.name)}`;
+    }
+    
     window.location.href = url;
 
   } catch (err) {
