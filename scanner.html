@@ -223,6 +223,22 @@
       backdrop-filter: blur(5px);
     }
 
+    .mobile-hint {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      border: 1px solid rgba(216,30,39,0.4);
+      border-radius: 8px;
+      padding: 10px 20px;
+      z-index: 20;
+      text-align: center;
+      color: #fff;
+      backdrop-filter: blur(10px);
+      animation: fadeInUp 0.5s ease-out;
+    }
+
     .model-info {
       position: fixed;
       top: 100px;
@@ -311,6 +327,212 @@
       font-family: monospace;
     }
 
+    /* Controles de zoom para desktop */
+    .zoom-controls {
+      position: fixed;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 20;
+      background: rgba(0,0,0,0.85);
+      border: 1px solid rgba(216,30,39,0.4);
+      border-radius: 12px;
+      padding: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .zoom-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .zoom-btn:hover {
+      background: rgba(216,30,39,0.3);
+      border-color: #d81e27;
+      transform: scale(1.05);
+    }
+
+    .zoom-btn:active {
+      transform: scale(0.95);
+    }
+
+    .zoom-indicator {
+      padding: 8px 12px;
+      background: rgba(216,30,39,0.2);
+      border-radius: 6px;
+      color: #d81e27;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      border: 1px solid rgba(216,30,39,0.3);
+      min-width: 60px;
+    }
+
+    /* Controles de rotación para desktop */
+    .rotation-controls {
+      position: fixed;
+      left: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: grid;
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
+      gap: 8px;
+      z-index: 20;
+      background: rgba(0,0,0,0.85);
+      border: 1px solid rgba(216,30,39,0.4);
+      border-radius: 12px;
+      padding: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .rotation-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .rotation-btn:hover {
+      background: rgba(216,30,39,0.3);
+      border-color: #d81e27;
+      transform: scale(1.05);
+    }
+
+    .rotation-btn:active {
+      background: rgba(216,30,39,0.5);
+      transform: scale(0.95);
+    }
+
+    /* Layout de los botones de rotación */
+    #rotateUp {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    #rotateLeft {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    #rotateReset {
+      grid-column: 2;
+      grid-row: 2;
+      font-size: 24px;
+    }
+
+    #rotateRight {
+      grid-column: 3;
+      grid-row: 2;
+    }
+
+    #rotateDown {
+      grid-column: 2;
+      grid-row: 3;
+    }
+
+    /* Botón de captura integrado en controles de zoom (desktop) */
+    .capture-btn-integrated {
+      margin-top: 8px;
+      background: rgba(0,150,255,0.2) !important;
+      border-color: rgba(0,150,255,0.4) !important;
+      font-size: 20px;
+    }
+
+    .capture-btn-integrated:hover {
+      background: rgba(0,150,255,0.4) !important;
+      border-color: #0096ff !important;
+    }
+
+    .capture-btn-integrated.capturing {
+      background: rgba(255,165,0,0.3) !important;
+      border-color: #ffa500 !important;
+      pointer-events: none;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .capture-btn-integrated.captured {
+      background: rgba(0,200,0,0.4) !important;
+      border-color: #00c800 !important;
+      pointer-events: none;
+    }
+
+    .capture-btn-integrated.error {
+      background: rgba(200,0,0,0.4) !important;
+      border-color: #c80000 !important;
+      pointer-events: none;
+    }
+
+    /* Botón de captura para móvil */
+    .capture-btn-mobile {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0,150,255,0.9);
+      border: 3px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,150,255,0.4);
+    }
+
+    .capture-btn-mobile:active {
+      transform: scale(0.9);
+    }
+
+    .capture-btn-mobile.capturing {
+      background: rgba(255,165,0,0.9);
+      border-color: #ffa500;
+      pointer-events: none;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .capture-btn-mobile.captured {
+      background: rgba(0,200,0,0.9);
+      border-color: #00c800;
+      pointer-events: none;
+    }
+
+    .capture-btn-mobile.error {
+      background: rgba(200,0,0,0.9);
+      border-color: #c80000;
+      pointer-events: none;
+    }
+
     @media (max-width: 768px) {
       .scanner-frame {
         width: 80vmin;
@@ -321,6 +543,35 @@
       }
       .logo {
         font-size: 18px;
+      }
+      .zoom-controls, .rotation-controls {
+        display: none; /* Ocultar en móviles, usar gestos táctiles en su lugar */
+      }
+      .capture-btn-mobile {
+        bottom: 90px;
+        right: 16px;
+        width: 56px;
+        height: 56px;
+        font-size: 26px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .zoom-controls, .rotation-controls {
+        display: none; /* Ocultar en tablets también */
+      }
+      .capture-btn-integrated {
+        display: none; /* Ocultar botón integrado en tablets */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .capture-btn-mobile {
+        bottom: 80px;
+        right: 12px;
+        width: 52px;
+        height: 52px;
+        font-size: 24px;
       }
     }
   </style>
@@ -346,8 +597,13 @@
     <div class="status-text" id="statusText">Cargando...</div>
   </div>
 
-  <div class="instructions">
+  <div class="instructions" id="instructions">
     Apunta la cámara hacia el marcador impreso
+  </div>
+
+  <div class="mobile-hint" id="mobileHint" style="display: none;">
+    <div style="font-size: 11px; opacity: 0.8; margin-bottom: 4px;">CONTROLES:</div>
+    <div style="font-size: 12px;">🖐️ 1 dedo: Rotar | 🤏 2 dedos: Zoom</div>
   </div>
 
   <div class="model-info" id="modelInfo">
@@ -363,6 +619,25 @@
     // Initialize scanner on page load
     window.addEventListener('load', () => {
       const closeBtn = document.getElementById('closeBtn');
+      const mobileHint = document.getElementById('mobileHint');
+      
+      // Detectar si es móvil/tablet
+      const isMobile = ('ontouchstart' in window) && window.innerWidth <= 1024;
+      
+      if (isMobile && mobileHint) {
+        // Mostrar hint de controles móviles después de 2 segundos
+        setTimeout(() => {
+          mobileHint.style.display = 'block';
+          // Ocultar después de 5 segundos
+          setTimeout(() => {
+            mobileHint.style.opacity = '0';
+            mobileHint.style.transition = 'opacity 1s';
+            setTimeout(() => {
+              mobileHint.style.display = 'none';
+            }, 1000);
+          }, 5000);
+        }, 2000);
+      }
       
       closeBtn.addEventListener('click', async () => {
         if (window.stopAR) {

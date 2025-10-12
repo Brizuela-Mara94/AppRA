@@ -62,6 +62,16 @@
             background: #D81E27;
             z-index: 1;
             filter: brightness(1.2);
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.1s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
         }
 
         /* Imagen de la máquina más grande y cercana */
@@ -75,6 +85,23 @@
             height: auto;
             z-index: 2;
             filter: drop-shadow(-10px 20px 50px rgba(0, 0, 0, 0.6));
+            
+            /* Animación de entrada */
+            opacity: 0;
+            animation: fadeInSlide 1.2s ease-out 0.3s forwards;
+        }
+
+        @keyframes fadeInSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(-50%) translateX(100px);
+                filter: drop-shadow(-10px 20px 50px rgba(0, 0, 0, 0.6)) blur(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+                filter: drop-shadow(-10px 20px 50px rgba(0, 0, 0, 0.6)) blur(0px);
+            }
         }
 
         /* Contenido principal */
@@ -92,6 +119,10 @@
             letter-spacing: 0.5px;
             position: relative;
             padding-left: 25px;
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
         }
 
         .hero-subtitle::before {
@@ -112,6 +143,10 @@
             margin-bottom: 30px;
             letter-spacing: -1.5px;
             color: #fff;
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
         }
 
         .hero-description {
@@ -121,6 +156,10 @@
             border-left: 2px solid #D81E27;
             padding-left: 25px;
             line-height: 1.6;
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.6s forwards;
         }
 
         .hero-description strong {
@@ -141,6 +180,22 @@
             padding: 10px 0;
             transition: gap 0.3s ease;
             text-decoration: none;
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.8s forwards;
+        }
+        
+        /* Animación para el contenido de texto */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .learn-more-btn:hover {
