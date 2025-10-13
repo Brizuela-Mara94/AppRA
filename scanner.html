@@ -20,8 +20,19 @@
     console.log('🔧 APP_BASE_URL configurada:', window.APP_BASE_URL);
   </script>
   
-  <!-- 4. Cargar tu script como módulo al final -->
-  <script type="module" src="src/scanner.js" defer></script>
+  <!-- 4. Cargar tu script como módulo al final, usando ruta dinámica -->
+  <script>
+    // Cargar src/scanner.js según entorno
+    (function() {
+      var base = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : '/AppRA';
+      var script = document.createElement('script');
+      script.type = 'module';
+      script.defer = true;
+      script.src = base + '/src/scanner.js';
+      document.head.appendChild(script);
+      console.log('🟢 Intentando cargar script:', script.src);
+    })();
+  </script>
   
    <style>
     * {
