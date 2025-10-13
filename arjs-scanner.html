@@ -598,6 +598,35 @@
         font-size: 12px;
       }
     }
+
+    /* Fix para video de cámara en móvil */
+    a-scene {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .a-canvas {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    video {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      min-width: 100% !important;
+      min-height: 100% !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: cover !important;
+    }
   </style>
 </head>
 <body>
@@ -666,21 +695,35 @@
   </button>
 
   <script>
-    // Configurar base URL para GitHub Pages
+    // Configurar base URL para GitHub Pages ANTES de inicializar A-Frame
+    window.BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : '/AppRA/';
+    console.log('🔧 Base URL configurada:', window.BASE_URL);
+    
+    // Registrar componente cuando A-Frame esté disponible
     if (typeof AFRAME !== 'undefined') {
-      const baseURL = window.location.hostname === 'localhost' ? '' : '/AppRA/';
-      console.log('🔧 Base URL configurada:', baseURL);
-      
-      // Registrar componente para manejar rutas
+      console.log('✅ A-Frame detectado, registrando componente...');
+      registerGHPagesComponent();
+    } else {
+      // Esperar a que A-Frame se cargue
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof AFRAME !== 'undefined') {
+          console.log('✅ A-Frame cargado, registrando componente...');
+          registerGHPagesComponent();
+        }
+      });
+    }
+    
+    function registerGHPagesComponent() {
       AFRAME.registerComponent('gh-pages-model', {
         schema: { type: 'string' },
         init: function () {
           const modelPath = this.data;
-          const fullPath = baseURL + modelPath;
-          console.log('📦 Cargando modelo:', fullPath);
+          const fullPath = window.BASE_URL + modelPath;
+          console.log('📦 Cargando modelo desde:', fullPath);
           this.el.setAttribute('gltf-model', fullPath);
         }
       });
+      console.log('✅ Componente gh-pages-model registrado');
     }
   </script>
 
