@@ -719,8 +719,18 @@
         init: function () {
           const modelPath = this.data;
           const fullPath = window.BASE_URL + modelPath;
-          console.log('📦 Cargando modelo desde:', fullPath);
+          console.log('📦 Intentando cargar modelo desde:', fullPath);
           this.el.setAttribute('gltf-model', fullPath);
+          
+          // Listener para errores de carga
+          this.el.addEventListener('model-error', function(e) {
+            console.error('❌ Error al cargar modelo:', fullPath, e);
+          });
+          
+          // Listener para carga exitosa
+          this.el.addEventListener('model-loaded', function(e) {
+            console.log('✅ Modelo cargado exitosamente:', fullPath);
+          });
         }
       });
       console.log('✅ Componente gh-pages-model registrado');
@@ -936,10 +946,23 @@
         const marker = document.getElementById(`marker${i}`);
         const model = document.getElementById(`model${i}`);
         
-        if (!marker || !model) continue;
+        if (!marker || !model) {
+          console.warn(`⚠️ No se encontró marcador ${i} o modelo ${i}`);
+          continue;
+        }
+        
+        console.log(`📋 Marcador ${i} y modelo ${i} encontrados en DOM`);
 
         marker.addEventListener('markerFound', function() {
-          console.log(`✅ Marcador ${i} detectado`);
+          console.log(`🎯 Marcador ${i} DETECTADO!`);
+          console.log(`   - Modelo visible:`, model.object3D.visible);
+          console.log(`   - Atributo gltf-model:`, model.getAttribute('gltf-model') || model.getAttribute('gh-pages-model'));
+          
+          // Asegurarse de que el modelo sea visible
+          if (model.object3D) {
+            model.object3D.visible = true;
+            console.log('✅ Modelo visible establecido a true');
+          }
           
           if (!markerDetectedOnce) {
             // Primera detección: configurar persistencia
@@ -956,6 +979,12 @@
                 persistentModel.setAttribute('position', '0 -0.5 -2');
                 persistentModel.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
                 persistentModel.setAttribute('rotation', `${currentRotation.x} ${currentRotation.y} ${currentRotation.z}`);
+                
+                // Asegurar visibilidad del modelo persistente
+                if (persistentModel.object3D) {
+                  persistentModel.object3D.visible = true;
+                }
+                
                 camera.appendChild(persistentModel);
                 currentModel = persistentModel;
                 

@@ -13,8 +13,15 @@
   <!-- 2. Cargar AR.js para Three.js (threex) desde CDN -->
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/three.js/build/ar-threex.js"></script>
   
-  <!-- 3. Cargar tu script como módulo al final -->
-  <script type="module" src="./src/scanner.js" defer></script>
+  <!-- 3. Configurar base URL y cargar script -->
+  <script>
+    // Configurar base URL para rutas
+    window.APP_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : '/AppRA/';
+    console.log('🔧 APP_BASE_URL configurada:', window.APP_BASE_URL);
+  </script>
+  
+  <!-- 4. Cargar tu script como módulo al final -->
+  <script type="module" src="src/scanner.js" defer></script>
   
    <style>
     * {
@@ -722,9 +729,25 @@
       });
 
       // Start AR after a short delay to ensure all resources are loaded
+      console.log('⏱️ Esperando 400ms antes de iniciar scanner...');
       setTimeout(() => {
         if (window.startScanner) {
-          window.startScanner();
+          console.log('✅ window.startScanner encontrado, iniciando...');
+          try {
+            window.startScanner();
+          } catch (err) {
+            console.error('❌ Error al llamar startScanner:', err);
+            const statusText = document.getElementById('statusText');
+            if (statusText) {
+              statusText.textContent = 'Error al iniciar: ' + err.message;
+            }
+          }
+        } else {
+          console.error('❌ window.startScanner NO está definido');
+          const statusText = document.getElementById('statusText');
+          if (statusText) {
+            statusText.textContent = 'Error: Script no cargado correctamente';
+          }
         }
       }, 400);
     });
