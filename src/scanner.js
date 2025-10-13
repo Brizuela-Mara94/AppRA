@@ -324,10 +324,16 @@ window.startScanner = async () => {
           
           // Mostrar botón de captura si estaba oculto
           const captureBtn = document.getElementById('captureBtn');
+          const captureBtnDesktop = document.getElementById('captureBtnDesktop');
           if (captureBtn) {
             captureBtn.style.display = 'flex';
-            console.log('📷 Botón de captura activado y visible');
-          } else {
+            console.log('📷 Botón de captura móvil activado y visible');
+          }
+          if (captureBtnDesktop) {
+            captureBtnDesktop.style.display = 'flex';
+            console.log('📷 Botón de captura desktop activado y visible');
+          }
+          if (!captureBtn && !captureBtnDesktop) {
             console.warn('⚠️ Botón de captura no encontrado en el DOM');
           }
           
@@ -701,53 +707,66 @@ function createCaptureButton() {
   // Detectar si es desktop
   const isDesktop = !('ontouchstart' in window) || window.innerWidth > 1024;
   
-  console.log('🎮 Creando botón de captura...', isDesktop ? 'Desktop' : 'Móvil');
+  console.log('🎮 Configurando botón de captura...', isDesktop ? 'Desktop' : 'Móvil');
+  
+  // Verificar si ya existe el botón en el HTML
+  let captureBtn = document.getElementById('captureBtn');
   
   if (isDesktop) {
     // Agregar botón de captura a los controles de zoom existentes
     const zoomControls = document.querySelector('.zoom-controls');
     if (zoomControls) {
-      const captureBtn = document.createElement('button');
-      captureBtn.className = 'zoom-btn capture-btn-integrated';
-      captureBtn.id = 'captureBtn';
-      captureBtn.title = 'Capturar pantalla';
-      captureBtn.innerHTML = '📷';
-      captureBtn.style.display = 'none'; // Oculto hasta que se detecte el marcador
-      zoomControls.appendChild(captureBtn);
+      const desktopCaptureBtn = document.createElement('button');
+      desktopCaptureBtn.className = 'zoom-btn capture-btn-integrated';
+      desktopCaptureBtn.id = 'captureBtnDesktop';
+      desktopCaptureBtn.title = 'Capturar pantalla';
+      desktopCaptureBtn.innerHTML = '📷';
+      desktopCaptureBtn.style.display = 'none'; // Oculto hasta que se detecte el marcador
+      zoomControls.appendChild(desktopCaptureBtn);
       
-      captureBtn.addEventListener('click', () => {
+      desktopCaptureBtn.addEventListener('click', () => {
         console.log('🖱️ Click en botón de captura (Desktop)');
         captureScreen();
       });
+      
+      // Usar el botón de desktop
+      captureBtn = desktopCaptureBtn;
       
       console.log('✅ Botón de captura desktop creado');
     } else {
       console.warn('⚠️ No se encontró .zoom-controls para agregar el botón');
     }
   } else {
-    // Para móvil, crear botón flotante
-    const captureBtn = document.createElement('button');
-    captureBtn.className = 'capture-btn-mobile';
-    captureBtn.id = 'captureBtn';
-    captureBtn.title = 'Capturar pantalla';
-    captureBtn.innerHTML = '<span class="capture-icon">📷</span>';
-    captureBtn.style.display = 'none'; // Oculto hasta que se detecte el marcador
-    document.body.appendChild(captureBtn);
+    // Para móvil, usar el botón que ya existe en el HTML o crear uno nuevo
+    if (!captureBtn) {
+      captureBtn = document.createElement('button');
+      captureBtn.className = 'capture-btn-mobile';
+      captureBtn.id = 'captureBtn';
+      captureBtn.title = 'Capturar pantalla';
+      captureBtn.innerHTML = '<span class="capture-icon">📷</span>';
+      captureBtn.style.display = 'none';
+      document.body.appendChild(captureBtn);
+      console.log('✅ Botón de captura móvil creado dinámicamente');
+    } else {
+      console.log('✅ Botón de captura móvil encontrado en HTML');
+    }
     
+    // Asegurar que el event listener esté configurado
     captureBtn.addEventListener('click', () => {
       console.log('👆 Click en botón de captura (Móvil)');
       captureScreen();
     });
-    
-    console.log('✅ Botón de captura móvil creado');
   }
+  
+  console.log('✅ Botón de captura configurado correctamente');
 }
 
 // Función para capturar la pantalla completa (con video de fondo)
 function captureScreen() {
   console.log('📸 Capturando pantalla completa...');
   
-  const captureBtn = document.getElementById('captureBtn');
+  // Buscar el botón que se usó (móvil o desktop)
+  const captureBtn = document.getElementById('captureBtn') || document.getElementById('captureBtnDesktop');
   if (!captureBtn) {
     console.error('❌ Botón de captura no encontrado');
     return;
@@ -1125,7 +1144,15 @@ async function initARjs(barcodeValue, modelConfig, machineName, updateStatus, sh
           
           // Mostrar botón de captura
           const captureBtn = document.getElementById('captureBtn');
-          if (captureBtn) captureBtn.style.display = 'flex';
+          const captureBtnDesktop = document.getElementById('captureBtnDesktop');
+          if (captureBtn) {
+            captureBtn.style.display = 'flex';
+            console.log('📷 Botón de captura móvil visible');
+          }
+          if (captureBtnDesktop) {
+            captureBtnDesktop.style.display = 'flex';
+            console.log('📷 Botón de captura desktop visible');
+          }
         } else {
           console.log(`🎯❌ Marcador ${barcodeValue} perdido`);
           if (updateStatus) updateStatus(`Buscando marcador ${barcodeValue}...`);

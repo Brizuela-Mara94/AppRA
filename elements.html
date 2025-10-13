@@ -156,6 +156,9 @@
       color:#9a9a9a; font-size:18px; cursor:pointer; transition:all .22s;
     }
     .nav-btn:hover{ border-color:#d81e27; color:#d81e27; background:rgba(216,30,39,0.06) }
+    
+    /* Hide mobile specs container on desktop */
+    .mobile-specs-container { display: none; }
 
     .sidebar-right{ 
       align-self:stretch; 
@@ -406,10 +409,13 @@
       z-index: 998;
       opacity: 0;
       transition: opacity 0.3s ease;
+      pointer-events: none;
     }
 
     .mobile-overlay.active {
+      display: block;
       opacity: 1;
+      pointer-events: auto;
     }
 
     .mobile-section {
@@ -439,7 +445,49 @@
         overflow-y: auto;
       }
       
-      .sidebar-left, .sidebar-right{ display:none }
+      .sidebar-left{ display:none }
+      .sidebar-right { display: none }
+      
+      /* Mostrar contenedor de specs móvil */
+      .mobile-specs-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 0;
+        margin-top: 20px;
+      }
+      
+      .categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+      
+      .cat-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      
+      .specs {
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      
+      .ar-btn {
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 16px 32px;
+        font-size: 16px;
+      }
+      
+      .ar-mode-selector {
+        max-width: 600px;
+        margin: 0 auto 16px;
+        width: 100%;
+      }
       
       .menu-toggle, .mobile-sidebar, .mobile-overlay {
         display: flex;
@@ -447,6 +495,7 @@
       
       .machine-view {
         padding: 20px 10px;
+        order: 2;
       }
       
       .machine-img{ 
@@ -487,7 +536,7 @@
 
     @media (max-width: 768px) {
       .layout {
-        padding: 100px 20px 20px;
+        padding: 100px 20px 30px;
       }
       
       .machine-name {
@@ -503,11 +552,37 @@
         height: 50px;
         font-size: 22px;
       }
+      
+      .specs {
+        padding: 16px;
+      }
+      
+      .specs h4 {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+      
+      .spec-row {
+        margin-bottom: 10px;
+      }
+      
+      .spec-label {
+        font-size: 11px;
+      }
+      
+      .spec-val {
+        font-size: 14px;
+      }
+      
+      .ar-btn {
+        padding: 14px 28px;
+        font-size: 15px;
+      }
     }
 
     @media (max-width: 480px) {
       .layout {
-        padding: 90px 15px 15px;
+        padding: 90px 15px 25px;
       }
       
       .machine-img {
@@ -520,6 +595,32 @@
       
       .machine-description {
         font-size: 13px;
+        margin: 12px 0 20px;
+      }
+      
+      .nav-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+      
+      .cat-btn {
+        padding: 7px 10px;
+        font-size: 12px;
+      }
+      
+      .specs {
+        padding: 14px;
+      }
+      
+      .ar-btn {
+        padding: 13px 24px;
+        font-size: 14px;
+      }
+      
+      .mode-label {
+        font-size: 13px;
+        padding: 8px 12px;
       }
       
       .mobile-sidebar {
@@ -541,46 +642,13 @@
   <div class="mobile-overlay" id="mobileOverlay"></div>
 
   <!-- Mobile Sidebar -->
+    <!-- Mobile Sidebar -->
   <div class="mobile-sidebar" id="mobileSidebar">
     <div class="mobile-section">
-      <h3>Maquinarias</h3>
+      <h3>Seleccionar Maquinaria</h3>
       <ul id="mobileMachineryList" class="machinery-list">
       </ul>
     </div>
-
-    <div class="mobile-section">
-      <h3>Categorías</h3>
-      <div id="mobileCategories" class="categories">
-      </div>
-    </div>
-
-    <div class="mobile-section">
-      <h3>Especificaciones</h3>
-      <div class="specs">
-        <div class="spec-row"><div class="spec-label">Capacidad</div><div class="spec-val" id="mobileSpecCapacity">-</div></div>
-        <div class="spec-row"><div class="spec-label">Potencia</div><div class="spec-val" id="mobileSpecPower">-</div></div>
-        <div class="spec-row"><div class="spec-label">Peso</div><div class="spec-val" id="mobileSpecWeight">-</div></div>
-        <div class="spec-row"><div class="spec-label">Aplicación</div><div class="spec-val" id="mobileSpecApplication">-</div></div>
-      </div>
-    </div>
-
-    <div class="mobile-section">
-      <h3>Modo AR</h3>
-      <div class="ar-mode-selector">
-        <label class="mode-label">
-          <input type="radio" name="arModeMobile" value="mindar" checked id="modeMindARMobile">
-          <span class="mode-text">📦 MindAR</span>
-        </label>
-        <label class="mode-label">
-          <input type="radio" name="arModeMobile" value="arjs" id="modeARjsMobile">
-          <span class="mode-text">🔲 AR.js</span>
-        </label>
-      </div>
-    </div>
-
-    <button class="ar-btn" id="arBtnMobile" aria-label="Activar Realidad Aumentada">
-      Ver en AR
-    </button>
   </div>
 
   <header>
@@ -609,6 +677,37 @@
       <div class="machine-nav">
         <button class="nav-btn" id="prevBtn" title="Anterior">←</button>
         <button class="nav-btn" id="nextBtn" title="Siguiente">→</button>
+      </div>
+
+      <!-- Mobile Specs and AR (visible only on mobile) -->
+      <div class="mobile-specs-container">
+        <div class="mobile-section">
+          <h3>Especificaciones</h3>
+          <div class="specs">
+            <div class="spec-row"><div class="spec-label">Capacidad</div><div class="spec-val" id="mobileSpecCapacity">-</div></div>
+            <div class="spec-row"><div class="spec-label">Potencia</div><div class="spec-val" id="mobileSpecPower">-</div></div>
+            <div class="spec-row"><div class="spec-label">Peso</div><div class="spec-val" id="mobileSpecWeight">-</div></div>
+            <div class="spec-row"><div class="spec-label">Aplicación</div><div class="spec-val" id="mobileSpecApplication">-</div></div>
+          </div>
+        </div>
+
+        <div class="mobile-section">
+          <h3>Modo AR</h3>
+          <div class="ar-mode-selector">
+            <label class="mode-label">
+              <input type="radio" name="arModeMobile" value="mindar" checked id="modeMindARMobile">
+              <span class="mode-text">📦 MindAR</span>
+            </label>
+            <label class="mode-label">
+              <input type="radio" name="arModeMobile" value="arjs" id="modeARjsMobile">
+              <span class="mode-text">🔲 AR.js</span>
+            </label>
+          </div>
+        </div>
+
+        <button class="ar-btn" id="arBtnMobile" aria-label="Activar Realidad Aumentada">
+          Ver en AR
+        </button>
       </div>
     </main>
 
@@ -836,7 +935,6 @@
     const mobileSidebar = document.getElementById('mobileSidebar');
     const mobileOverlay = document.getElementById('mobileOverlay');
     const mobileMachineryList = document.getElementById('mobileMachineryList');
-    const mobileCategories = document.getElementById('mobileCategories');
     const arBtnMobile = document.getElementById('arBtnMobile');
 
     // Toggle mobile menu
@@ -849,53 +947,6 @@
 
     menuToggle.addEventListener('click', toggleMobileMenu);
     mobileOverlay.addEventListener('click', toggleMobileMenu);
-
-    // Render mobile machinery list
-    function renderMobileList() {
-      mobileMachineryList.innerHTML = '';
-      filteredIndexes.forEach((idx, i) => {
-        const m = machines[idx];
-        const li = document.createElement('li');
-        li.textContent = m.name;
-        if (i === currentFilteredIndex) li.classList.add('active');
-        li.addEventListener('click', () => {
-          currentFilteredIndex = i;
-          updateToCurrentFiltered();
-          renderMobileList();
-          syncMobileSpecs();
-          toggleMobileMenu();
-        });
-        mobileMachineryList.appendChild(li);
-      });
-    }
-
-    // Render mobile categories
-    function renderMobileCategories() {
-      mobileCategories.innerHTML = '';
-      groups.forEach(g => {
-        const btn = document.createElement('button');
-        btn.className = 'cat-btn';
-        btn.textContent = g;
-        if (g === currentGroup) btn.classList.add('active');
-        btn.addEventListener('click', () => {
-          filterByGroup(g);
-          renderMobileCategories();
-          renderMobileList();
-          syncMobileSpecs();
-        });
-        mobileCategories.appendChild(btn);
-      });
-    }
-
-    // Sync mobile specs with current machine
-    function syncMobileSpecs() {
-      if (filteredIndexes.length === 0) return;
-      const m = machines[filteredIndexes[currentFilteredIndex]];
-      document.getElementById('mobileSpecCapacity').textContent = m.capacity;
-      document.getElementById('mobileSpecPower').textContent = m.power;
-      document.getElementById('mobileSpecWeight').textContent = m.weight;
-      document.getElementById('mobileSpecApplication').textContent = m.application;
-    }
 
     // Sync AR mode radios between desktop and mobile
     document.querySelectorAll('input[name="arMode"]').forEach(radio => {
@@ -938,15 +989,43 @@
       }
     });
 
+    // Render mobile machinery list
+    function renderMobileList() {
+      mobileMachineryList.innerHTML = "";
+      filteredIndexes.forEach((machineIdx, pos) => {
+        const m = machines[machineIdx];
+        const li = document.createElement('li');
+        li.dataset.idx = machineIdx;
+        li.innerHTML = `<span>${m.name}</span>`;
+        if (pos === currentFilteredIndex) li.classList.add('active');
+        li.addEventListener('click', () => {
+          currentFilteredIndex = pos;
+          updateToCurrentFiltered();
+          toggleMobileMenu();
+        });
+        mobileMachineryList.appendChild(li);
+      });
+    }
+
+    // Sync mobile specs with current machine
+    function syncMobileSpecs() {
+      if (filteredIndexes.length === 0) return;
+      const m = machines[filteredIndexes[currentFilteredIndex]];
+      document.getElementById('mobileSpecCapacity').textContent = m.capacity;
+      document.getElementById('mobileSpecPower').textContent = m.power;
+      document.getElementById('mobileSpecWeight').textContent = m.weight;
+      document.getElementById('mobileSpecApplication').textContent = m.application;
+    }
+
     // Initialize mobile menu content
     renderMobileList();
-    renderMobileCategories();
     syncMobileSpecs();
 
     // Update mobile content when machine changes
     const originalUpdateFunction = updateToCurrentFiltered;
     updateToCurrentFiltered = function() {
       originalUpdateFunction();
+      renderMobileList();
       syncMobileSpecs();
     };
 

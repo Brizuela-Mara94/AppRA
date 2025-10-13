@@ -665,6 +665,25 @@
     <span>Escanear otro</span>
   </button>
 
+  <script>
+    // Configurar base URL para GitHub Pages
+    if (typeof AFRAME !== 'undefined') {
+      const baseURL = window.location.hostname === 'localhost' ? '' : '/AppRA/';
+      console.log('🔧 Base URL configurada:', baseURL);
+      
+      // Registrar componente para manejar rutas
+      AFRAME.registerComponent('gh-pages-model', {
+        schema: { type: 'string' },
+        init: function () {
+          const modelPath = this.data;
+          const fullPath = baseURL + modelPath;
+          console.log('📦 Cargando modelo:', fullPath);
+          this.el.setAttribute('gltf-model', fullPath);
+        }
+      });
+    }
+  </script>
+
   <!-- A-Frame Scene -->
   <a-scene
     id="scene"
@@ -682,7 +701,7 @@
       <a-entity 
         id="model20"
         class="ar-model"
-        gltf-model="./models/lamp.glb" 
+        gh-pages-model="models/lamp.glb" 
         scale="0.5 0.5 0.5" 
         position="0 0 0"
         rotation="-90 0 0"
@@ -694,7 +713,7 @@
       <a-entity 
         id="model21"
         class="ar-model"
-        gltf-model="./models/pico.glb" 
+        gh-pages-model="models/pico.glb" 
         scale="0.5 0.5 0.5" 
         position="0 0 0"
         rotation="-90 0 0"
@@ -706,7 +725,7 @@
       <a-entity 
         id="model22"
         class="ar-model"
-        gltf-model="./models/truck.glb" 
+        gh-pages-model="models/truck.glb" 
         scale="0.5 0.5 0.5" 
         position="0 0 0"
         rotation="-90 0 0"
@@ -718,7 +737,7 @@
       <a-entity 
         id="model23"
         class="ar-model"
-        gltf-model="./models/tunel.glb" 
+        gh-pages-model="models/tunel.glb" 
         scale="0.5 0.5 0.5" 
         position="0 0 0"
         rotation="-90 0 0"
@@ -730,7 +749,7 @@
       <a-entity 
         id="model24"
         class="ar-model"
-        gltf-model="./models/garras.glb" 
+        gh-pages-model="models/garras.glb" 
         scale="0.5 0.5 0.5" 
         position="0 0 0"
         rotation="-90 0 0"
@@ -742,7 +761,7 @@
       <a-entity 
         id="model25"
         class="ar-model"
-        gltf-model="./models/perforadora.glb" 
+        gh-pages-model="models/perforadora.glb" 
         scale="0.5 0.5 0.5" 
         position="0 0 0"
         rotation="-90 0 0"
@@ -754,7 +773,7 @@
       <a-entity 
         id="model26"
         class="ar-model"
-        gltf-model="./models/carga.glb" 
+        gh-pages-model="models/carga.glb" 
         scale="0.5 0.5 0.5" 
         position="0 0 0"
         rotation="-90 0 0"
