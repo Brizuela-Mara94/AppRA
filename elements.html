@@ -360,7 +360,7 @@
       <div class="machine-category" id="machineCategory">MAQUINARIA</div>
 
       <div id="machineWrapper" class="machine-wrap fade-in">
-        <img id="machineImage" class="machine-img" src="../assets/maquina.png" alt="Excavadora" />
+        <img id="machineImage" class="machine-img" src="./assets/maquina.png" alt="Excavadora" />
       </div>
 
       <h2 id="machineName" class="machine-name">Excavadora hidráulica</h2>
@@ -408,24 +408,24 @@
   <script>
     const machines = [
       // ✅ ACTIVOS - Con marcadores (7 elementos)
-      { name:"Túnel de Acceso", group:"Infraestructura", category:"Entrada de Mina", image:"../assets/tunel.png", description:"Entrada fortificada para acceso a la mina subterránea. Estructura reforzada con soportes metálicos y sistemas de ventilación integrados para garantizar operaciones seguras.", capacity:"4.5 m altura", power:"N/A", weight:"Estructura fija", application:"Minería subterránea", arMarker:"tunel" },
+      { name:"Túnel de Acceso", group:"Infraestructura", category:"Entrada de Mina", image:"./assets/tunel.png", description:"Entrada fortificada para acceso a la mina subterránea. Estructura reforzada con soportes metálicos y sistemas de ventilación integrados para garantizar operaciones seguras.", capacity:"4.5 m altura", power:"N/A", weight:"Estructura fija", application:"Minería subterránea", arMarker:"tunel" },
       
-      { name:"Máquina Araña", group:"Maquinaria", category:"Perforación", image:"../assets/garras.png", description:"Equipo de perforación especializado con brazos articulados tipo araña. Permite perforación en túneles y espacios confinados con alta precisión y estabilidad.", capacity:"12-15 m³", power:"450 HP", weight:"45,000 kg", application:"Perforación en túneles", arMarker:"garras" },
+      { name:"Máquina Araña", group:"Maquinaria", category:"Perforación", image:"./assets/garras.png", description:"Equipo de perforación especializado con brazos articulados tipo araña. Permite perforación en túneles y espacios confinados con alta precisión y estabilidad.", capacity:"12-15 m³", power:"450 HP", weight:"45,000 kg", application:"Perforación en túneles", arMarker:"garras" },
       
-      { name:"Camión Minero", group:"Transporte", category:"Transporte", image:"../assets/carga.png", description:"Camión ultra clase diseñado para transporte de material pesado en grandes distancias. Capacidad máxima de carga para operaciones mineras a gran escala.", capacity:"363 t", power:"4,000 HP", weight:"687,000 kg", application:"Transporte de mineral", arMarker:"camion" },
+      { name:"Camión Minero", group:"Transporte", category:"Transporte", image:"./assets/carga.png", description:"Camión ultra clase diseñado para transporte de material pesado en grandes distancias. Capacidad máxima de carga para operaciones mineras a gran escala.", capacity:"363 t", power:"4,000 HP", weight:"687,000 kg", application:"Transporte de mineral", arMarker:"camion" },
       
-      { name:"Perforadora Rotativa", group:"Equipamiento", category:"Perforación", image:"../assets/perforadora.png", description:"Equipo de perforación de alto rendimiento para barrenos de voladura. Sistema rotativo de precisión para operaciones de exploración y extracción.", capacity:"311 mm diámetro", power:"783 HP", weight:"95,000 kg", application:"Perforación y voladura", arMarker:"perforadora" },
+      { name:"Perforadora Rotativa", group:"Equipamiento", category:"Perforación", image:"./assets/perforadora.png", description:"Equipo de perforación de alto rendimiento para barrenos de voladura. Sistema rotativo de precisión para operaciones de exploración y extracción.", capacity:"311 mm diámetro", power:"783 HP", weight:"95,000 kg", application:"Perforación y voladura", arMarker:"perforadora" },
       
-      { name:"Casco Minero", group:"Equipamiento", category:"Seguridad", image:"../assets/lamp.png", description:"Casco de seguridad certificado con lámpara integrada. Protección contra impactos y penetración. Cumple con estándares internacionales de seguridad minera.", capacity:"Ajustable", power:"LED 5W", weight:"450 g", application:"Protección personal", arMarker:"casco" },
+      { name:"Casco Minero", group:"Equipamiento", category:"Seguridad", image:"./assets/lamp.png", description:"Casco de seguridad certificado con lámpara integrada. Protección contra impactos y penetración. Cumple con estándares internacionales de seguridad minera.", capacity:"Ajustable", power:"LED 5W", weight:"450 g", application:"Protección personal", arMarker:"casco" },
       
-      { name:"Pico Minero", group:"Equipamiento", category:"Herramientas", image:"../assets/pico.png", description:"Herramienta tradicional de acero forjado para extracción manual. Diseño ergonómico para trabajos de precisión en minería artesanal y mantenimiento.", capacity:"90 cm largo", power:"Manual", weight:"3.2 kg", application:"Extracción manual", arMarker:"pico" },
+      { name:"Pico Minero", group:"Equipamiento", category:"Herramientas", image:"./assets/pico.png", description:"Herramienta tradicional de acero forjado para extracción manual. Diseño ergonómico para trabajos de precisión en minería artesanal y mantenimiento.", capacity:"90 cm largo", power:"Manual", weight:"3.2 kg", application:"Extracción manual", arMarker:"pico" },
       
-      { name:"Rodillo Compactador", group:"Transporte", category:"Transporte", image:"../assets/truck.png", description:"Vehículo de carga pesada para transporte de mineral. Sistema hidráulico de alta capacidad para operaciones de gran escala.", capacity:"50 t", power:"850 HP", weight:"120,000 kg", application:"Transporte de material", arMarker:"truck" },
+      { name:"Rodillo Compactador", group:"Transporte", category:"Transporte", image:"./assets/truck.png", description:"Vehículo de carga pesada para transporte de mineral. Sistema hidráulico de alta capacidad para operaciones de gran escala.", capacity:"50 t", power:"850 HP", weight:"120,000 kg", application:"Transporte de material", arMarker:"truck" },
       
       // ⏸️ DESACTIVADOS TEMPORALMENTE - Sin marcadores aún (para integrar después)
-      // { name:"Pala Eléctrica", group:"Maquinaria", category:"Excavación", image:"../assets/maquina.png", description:"Pala eléctrica de alto tonelaje para operaciones de carga continua. Sistema eléctrico de alta eficiencia para extracción masiva de mineral.", capacity:"120 m³", power:"6,200 kW", weight:"980,000 kg", application:"Carga de mineral", arMarker:"pala" },
-      // { name:"Bulldozer", group:"Maquinaria", category:"Movimiento de tierra", image:"../assets/maquina.png", description:"Tractor de orugas de alta potencia para empuje y nivelación. Sistema hidráulico de precisión para movimiento de grandes volúmenes de tierra.", capacity:"27 m³ hoja", power:"850 HP", weight:"112,000 kg", application:"Empuje y nivelación", arMarker:"bulldozer" },
-      // { name:"Motoniveladora", group:"Mantenimiento", category:"Mantenimiento", image:"../assets/maquina.png", description:"Motoniveladora de precisión para mantenimiento de caminos mineros. Sistema de nivelación láser para superficies perfectamente uniformes.", capacity:"7.3 m hoja", power:"525 HP", weight:"64,000 kg", application:"Mantenimiento vial", arMarker:"motoniveladora" },
+      // { name:"Pala Eléctrica", group:"Maquinaria", category:"Excavación", image:"./assets/maquina.png", description:"Pala eléctrica de alto tonelaje para operaciones de carga continua. Sistema eléctrico de alta eficiencia para extracción masiva de mineral.", capacity:"120 m³", power:"6,200 kW", weight:"980,000 kg", application:"Carga de mineral", arMarker:"pala" },
+      // { name:"Bulldozer", group:"Maquinaria", category:"Movimiento de tierra", image:"./assets/maquina.png", description:"Tractor de orugas de alta potencia para empuje y nivelación. Sistema hidráulico de precisión para movimiento de grandes volúmenes de tierra.", capacity:"27 m³ hoja", power:"850 HP", weight:"112,000 kg", application:"Empuje y nivelación", arMarker:"bulldozer" },
+      // { name:"Motoniveladora", group:"Mantenimiento", category:"Mantenimiento", image:"./assets/maquina.png", description:"Motoniveladora de precisión para mantenimiento de caminos mineros. Sistema de nivelación láser para superficies perfectamente uniformes.", capacity:"7.3 m hoja", power:"525 HP", weight:"64,000 kg", application:"Mantenimiento vial", arMarker:"motoniveladora" },
     ];
 
     const groups = ["Todas", ...Array.from(new Set(machines.map(m => m.group)))];

@@ -247,7 +247,7 @@ window.startScanner = async () => {
     updateStatus('Cargando modelo 3D...');
 
     // Cargar modelo 3D
-    const modelPath = `/models/${modelConfig.path}`;
+    const modelPath = `${import.meta.env.BASE_URL}models/${modelConfig.path}`;
     console.log('📦 Cargando modelo:', modelPath);
 
     try {
