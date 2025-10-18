@@ -631,12 +631,32 @@ function setupTouchControls(model) {
   });
 
   // Controles táctiles móviles - rotación libre en todos los ejes
+  let debugInfo = null;
+  if (!isDesktop) {
+    // Crear indicador de debug para móvil
+    debugInfo = document.createElement('div');
+    debugInfo.style.position = 'fixed';
+    debugInfo.style.top = '100px';
+    debugInfo.style.right = '10px';
+    debugInfo.style.background = 'rgba(0,0,0,0.8)';
+    debugInfo.style.color = '#0f0';
+    debugInfo.style.padding = '10px';
+    debugInfo.style.borderRadius = '5px';
+    debugInfo.style.fontFamily = 'monospace';
+    debugInfo.style.fontSize = '12px';
+    debugInfo.style.zIndex = '999';
+    debugInfo.style.pointerEvents = 'none';
+    debugInfo.innerHTML = 'Debug: Listo';
+    document.body.appendChild(debugInfo);
+  }
+  
   arContainer.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) {
       e.preventDefault();
       isDragging = true;
       lastTouchX = e.touches[0].clientX;
       lastTouchY = e.touches[0].clientY;
+      if (debugInfo) debugInfo.innerHTML = '1 dedo: Rotar';
     } else if (e.touches.length === 2) {
       e.preventDefault();
       isDragging = false;
@@ -644,6 +664,7 @@ function setupTouchControls(model) {
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
+      if (debugInfo) debugInfo.innerHTML = '2 dedos: Zoom<br>Dist: ' + Math.round(lastPinchDist);
     }
   }, { passive: false });
 
@@ -651,11 +672,20 @@ function setupTouchControls(model) {
     e.preventDefault();
     isDragging = false;
     lastPinchDist = 0;
+    if (debugInfo) {
+      const activeModel = getActiveModel();
+      if (activeModel) {
+        debugInfo.innerHTML = 'Listo<br>Scale: ' + activeModel.scale.x.toFixed(2);
+      }
+    }
   }, { passive: false });
 
   arContainer.addEventListener('touchmove', (e) => {
     const activeModel = getActiveModel();
-    if (!activeModel) return;
+    if (!activeModel) {
+      if (debugInfo) debugInfo.innerHTML = 'ERROR: No model';
+      return;
+    }
     
     // Rotación completa con un dedo (horizontal y vertical)
     if (isDragging && e.touches.length === 1) {
@@ -667,14 +697,18 @@ function setupTouchControls(model) {
       const deltaX = touchX - lastTouchX;
       const deltaY = touchY - lastTouchY;
       
-      // Rotación horizontal (eje Y) - más sensible
+      // Rotación horizontal (eje Y)
       activeModel.rotation.y += deltaX * 0.015;
       
-      // Rotación vertical (eje X) - más sensible
+      // Rotación vertical (eje X)
       activeModel.rotation.x += deltaY * 0.015;
       
       lastTouchX = touchX;
       lastTouchY = touchY;
+      
+      if (debugInfo) {
+        debugInfo.innerHTML = 'Rotando<br>RY: ' + activeModel.rotation.y.toFixed(2);
+      }
     } 
     // Zoom con pinch (dos dedos)
     else if (e.touches.length === 2) {
@@ -688,15 +722,32 @@ function setupTouchControls(model) {
       if (lastPinchDist > 0) {
         const delta = dist - lastPinchDist;
         const scaleFactor = 1 + (delta * 0.005);
-        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, activeModel.scale.x * scaleFactor));
+        let newScale = activeModel.scale.x * scaleFactor;
         
-        // Aplicar la escala de forma segura
+        // Limitar escala con valores seguros
+        newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+        
+        // Aplicar la escala
         activeModel.scale.set(newScale, newScale, newScale);
         
-        // Asegurar que el modelo siga visible
+        // FORZAR visibilidad
         activeModel.visible = true;
+        activeModel.traverse((child) => {
+          child.visible = true;
+        });
+        
         if (activeModel.parent) {
           activeModel.parent.visible = true;
+        }
+        
+        // Forzar actualización de matriz
+        activeModel.updateMatrix();
+        activeModel.updateMatrixWorld(true);
+        
+        if (debugInfo) {
+          debugInfo.innerHTML = 'ZOOM<br>Scale: ' + newScale.toFixed(3) + 
+                                '<br>Delta: ' + delta.toFixed(1) +
+                                '<br>Visible: ' + activeModel.visible;
         }
       }
       
