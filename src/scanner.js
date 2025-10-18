@@ -632,12 +632,13 @@ function setupTouchControls(model) {
 
   // Controles táctiles móviles - rotación libre en todos los ejes
   arContainer.addEventListener('touchstart', (e) => {
-    e.preventDefault();
     if (e.touches.length === 1) {
+      e.preventDefault();
       isDragging = true;
       lastTouchX = e.touches[0].clientX;
       lastTouchY = e.touches[0].clientY;
     } else if (e.touches.length === 2) {
+      e.preventDefault();
       isDragging = false;
       lastPinchDist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
@@ -653,13 +654,13 @@ function setupTouchControls(model) {
   }, { passive: false });
 
   arContainer.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    
     const activeModel = getActiveModel();
     if (!activeModel) return;
     
     // Rotación completa con un dedo (horizontal y vertical)
     if (isDragging && e.touches.length === 1) {
+      e.preventDefault();
+      
       const touchX = e.touches[0].clientX;
       const touchY = e.touches[0].clientY;
       
@@ -677,6 +678,8 @@ function setupTouchControls(model) {
     } 
     // Zoom con pinch (dos dedos)
     else if (e.touches.length === 2) {
+      e.preventDefault();
+      
       const dist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
@@ -686,7 +689,15 @@ function setupTouchControls(model) {
         const delta = dist - lastPinchDist;
         const scaleFactor = 1 + (delta * 0.005);
         const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, activeModel.scale.x * scaleFactor));
+        
+        // Aplicar la escala de forma segura
         activeModel.scale.set(newScale, newScale, newScale);
+        
+        // Asegurar que el modelo siga visible
+        activeModel.visible = true;
+        if (activeModel.parent) {
+          activeModel.parent.visible = true;
+        }
       }
       
       lastPinchDist = dist;

@@ -21,7 +21,6 @@
   </script>
   
   <!-- 4. Cargar tu script como módulo al final -->
-  <script type="module" src="/src/scanner.js"></script>
   
    <style>
     * {
@@ -645,6 +644,7 @@
       }
     }
   </style>
+  <script type="module" crossorigin src="/AppRA/assets/scanner-D8WFVNn_.js"></script>
 </head>
 <body>
 <div id="ar-container"></div>
@@ -697,60 +697,5 @@
     <span class="capture-icon">📷</span>
   </button>
 
-  <script type="module">
-    // Initialize scanner on page load
-    window.addEventListener('load', () => {
-      const closeBtn = document.getElementById('closeBtn');
-      const mobileHint = document.getElementById('mobileHint');
-      
-      // Detectar si es móvil/tablet
-      const isMobile = ('ontouchstart' in window) && window.innerWidth <= 1024;
-      
-      if (isMobile && mobileHint) {
-        // Mostrar hint de controles móviles después de 2 segundos
-        setTimeout(() => {
-          mobileHint.style.display = 'block';
-          // Ocultar después de 5 segundos
-          setTimeout(() => {
-            mobileHint.style.opacity = '0';
-            mobileHint.style.transition = 'opacity 1s';
-            setTimeout(() => {
-              mobileHint.style.display = 'none';
-            }, 1000);
-          }, 5000);
-        }, 2000);
-      }
-      
-      closeBtn.addEventListener('click', async () => {
-        if (window.stopAR) {
-          await window.stopAR();
-        }
-        window.history.back();
-      });
-
-      // Start AR after a short delay to ensure all resources are loaded
-      console.log('⏱️ Esperando 400ms antes de iniciar scanner...');
-      setTimeout(() => {
-        if (window.startScanner) {
-          console.log('✅ window.startScanner encontrado, iniciando...');
-          try {
-            window.startScanner();
-          } catch (err) {
-            console.error('❌ Error al llamar startScanner:', err);
-            const statusText = document.getElementById('statusText');
-            if (statusText) {
-              statusText.textContent = 'Error al iniciar: ' + err.message;
-            }
-          }
-        } else {
-          console.error('❌ window.startScanner NO está definido');
-          const statusText = document.getElementById('statusText');
-          if (statusText) {
-            statusText.textContent = 'Error: Script no cargado correctamente';
-          }
-        }
-      }, 400);
-    });
-  </script>
 </body>
 </html>

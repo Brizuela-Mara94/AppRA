@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiningTech - Inicio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/AppRA/assets/monta%C3%B1a-CC09rEOs.jpeg") no-repeat center center/cover;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* Contenedor principal */
+        #home {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 140px; /* Más margen lateral */
+            overflow: visible;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px 140px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+
+        .logo span {
+            color: #D81E27;
+        }
+
+        /* Fondo rojo ajustado */
+        .red-backdrop {
+            position: absolute;
+            right: 28%;
+            top: 0;
+            width: 28%;
+            height: 100%;
+            background: #D81E27;
+            z-index: 1;
+            filter: brightness(1.2);
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.1s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Imagen de la máquina más grande y cercana */
+        .machine-image {
+            position: absolute;
+            right: 10%;
+            top: 52%;
+            transform: translateY(-50%);
+            width: 75%;
+            max-width: 1050px;
+            height: auto;
+            z-index: 2;
+            filter: drop-shadow(-10px 20px 50px rgba(0, 0, 0, 0.6));
+            
+            /* Animación de entrada */
+            opacity: 0;
+            animation: fadeInSlide 1.2s ease-out 0.3s forwards;
+        }
+
+        @keyframes fadeInSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(-50%) translateX(100px);
+                filter: drop-shadow(-10px 20px 50px rgba(0, 0, 0, 0.6)) blur(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+                filter: drop-shadow(-10px 20px 50px rgba(0, 0, 0, 0.6)) blur(0px);
+            }
+        }
+        
+        @keyframes fadeInSlideMobile {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Contenido principal */
+        .hero-content {
+            max-width: 500px;
+            z-index: 4;
+            position: relative;
+            margin-left: 80px; /* Mueve el texto un poco más a la derecha */
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding-left: 25px;
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .hero-subtitle::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 2px;
+            background-color: #D81E27;
+        }
+
+        .hero-title {
+            font-size: 68px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            letter-spacing: -1.5px;
+            color: #fff;
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        }
+
+        .hero-description {
+            font-size: 16px;
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            border-left: 2px solid #D81E27;
+            padding-left: 25px;
+            line-height: 1.6;
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.6s forwards;
+        }
+
+        .hero-description strong {
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        .learn-more-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 10px 0;
+            transition: gap 0.3s ease;
+            text-decoration: none;
+            
+            /* Animación */
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.8s forwards;
+        }
+        
+        /* Animación para el contenido de texto */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .learn-more-btn:hover {
+            gap: 25px;
+        }
+
+        .learn-more-btn .arrow-circle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transition: border-color 0.3s ease;
+        }
+
+        .learn-more-btn:hover .arrow-circle {
+            border-color: #fff;
+        }
+
+        .learn-more-btn .arrow {
+            font-size: 20px;
+        }
+
+        /* Indicador de página */
+        .page-indicator {
+            position: fixed;
+            bottom: 40px;
+            left: 140px;
+            font-size: 48px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.1);
+            z-index: 10;
+            letter-spacing: -1px;
+        }
+
+        .page-indicator span {
+            font-size: 22px;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 400;
+        }
+
+        /* Responsivo */
+        @media (max-width: 1200px) {
+            #home { padding: 0 80px; }
+            header { padding: 30px 80px; }
+            .hero-title { font-size: 54px; }
+            .machine-image { width: 80%; }
+            .red-backdrop { right: 18%; width: 30%; }
+            .page-indicator { left: 80px; }
+        }
+
+        @media (max-width: 992px) {
+            body {
+                overflow-y: auto;
+                min-height: 100vh;
+            }
+            
+            #home {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 100px 50px 60px;
+                min-height: 100vh;
+                height: auto;
+            }
+            
+            header {
+                padding: 25px 50px;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.7), transparent);
+            }
+            
+            .hero-content { 
+                max-width: 100%; 
+                width: 100%;
+                text-align: center; 
+                margin-left: 0;
+            }
+            
+            .hero-subtitle {
+                font-size: 16px;
+                margin-bottom: 25px;
+                padding-left: 0;
+            }
+            
+            .hero-subtitle::before { display: none; }
+            
+            .hero-title {
+                font-size: 52px;
+                margin-bottom: 30px;
+                line-height: 1.2;
+            }
+            
+            .hero-description {
+                font-size: 18px;
+                margin-bottom: 40px;
+                line-height: 1.7;
+                padding-left: 0;
+                border-left: none;
+            }
+            
+            .learn-more-btn { 
+                margin: 0 auto;
+                justify-content: center;
+                display: flex;
+                font-size: 18px;
+                gap: 20px;
+            }
+            
+            .arrow-circle {
+                width: 40px !important;
+                height: 40px !important;
+            }
+            
+            .red-backdrop { display: none; }
+            
+            .machine-image {
+                display: none;
+            }
+            
+            .page-indicator {
+                position: relative;
+                font-size: 42px;
+                left: auto;
+                bottom: auto;
+                text-align: center;
+                margin-top: 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            #home {
+                padding: 90px 40px 60px;
+            }
+            
+            header {
+                padding: 20px 40px;
+            }
+            
+            .logo {
+                font-size: 26px;
+            }
+            
+            .hero-subtitle {
+                font-size: 15px;
+            }
+            
+            .hero-title {
+                font-size: 44px;
+                line-height: 1.2;
+                margin-bottom: 25px;
+            }
+            
+            .hero-description {
+                font-size: 17px;
+                line-height: 1.7;
+                margin-bottom: 35px;
+            }
+            
+            .learn-more-btn {
+                font-size: 17px;
+            }
+            
+            .page-indicator {
+                font-size: 38px;
+                margin-top: 35px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #home {
+                padding: 80px 30px 50px;
+            }
+            
+            header {
+                padding: 18px 30px;
+            }
+            
+            .logo {
+                font-size: 24px;
+            }
+            
+            .hero-subtitle {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+            
+            .hero-title {
+                font-size: 36px;
+                margin-bottom: 20px;
+                line-height: 1.2;
+            }
+            
+            .hero-description {
+                font-size: 16px;
+                margin-bottom: 30px;
+                line-height: 1.6;
+            }
+            
+            .learn-more-btn {
+                font-size: 16px;
+                padding: 10px 0;
+                gap: 18px;
+            }
+            
+            .arrow-circle {
+                width: 38px !important;
+                height: 38px !important;
+            }
+            
+            .page-indicator {
+                font-size: 32px;
+                margin-top: 30px;
+            }
+            
+            .page-indicator span {
+                font-size: 20px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            #home {
+                padding: 75px 25px 45px;
+            }
+            
+            .hero-subtitle {
+                font-size: 13px;
+            }
+            
+            .hero-title {
+                font-size: 32px;
+            }
+            
+            .hero-description {
+                font-size: 15px;
+            }
+            
+            .learn-more-btn {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="home">
+        <header>
+            <div class="logo">Mining<span>Tech</span></div>
+        </header>
+
+        <div class="red-backdrop"></div>
+        <img src="/AppRA/assets/m3-mPJWYtmY.png" alt="Excavadora minera" class="machine-image">
+
+        <div class="hero-content">
+            <div class="hero-subtitle">Plataforma educativa para estudiantes</div>
+            <h1 class="hero-title">Aprende sobre equipamiento minero real</h1>
+            <p class="hero-description">
+                Conoce las <strong>maquinarias y equipos</strong> que encontrarás
+                en tu carrera como <strong>Ingeniero de Minas</strong>.
+            </p>
+            <a href="./elements.html" class="learn-more-btn">
+                Explorar equipamiento
+                <span class="arrow-circle">
+                    <span class="arrow">&rarr;</span>
+                </span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
