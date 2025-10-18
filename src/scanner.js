@@ -745,9 +745,11 @@ function setupTouchControls(model) {
         activeModel.updateMatrixWorld(true);
         
         if (debugInfo) {
+          const { x, y, z } = activeModel.position;
           debugInfo.innerHTML = 'ZOOM<br>Scale: ' + newScale.toFixed(3) + 
                                 '<br>Delta: ' + delta.toFixed(1) +
-                                '<br>Visible: ' + activeModel.visible;
+                                '<br>Visible: ' + activeModel.visible +
+                                '<br>Pos: ' + `${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)}`;
         }
       }
       
