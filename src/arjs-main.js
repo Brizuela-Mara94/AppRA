@@ -287,6 +287,9 @@ window.startScanner = async () => {
       // Posicionar sobre el marcador
       model3D.position.y = modelConfig.scale / 2;
       
+      // Asegurar que el modelo sea visible por defecto
+      model3D.visible = true;
+      
       markerRoot.add(model3D);
       console.log('✅ Modelo añadido a la escena');
       
@@ -301,6 +304,7 @@ window.startScanner = async () => {
       });
       model3D = new THREE.Mesh(geometry, material);
       model3D.position.y = 0.25;
+      model3D.visible = true; // Asegurar visibilidad
       markerRoot.add(model3D);
     }
 
@@ -338,7 +342,7 @@ window.startScanner = async () => {
     
     // Sistema de confirmación para evitar falsos positivos
     let consecutiveDetections = 0;
-    const REQUIRED_DETECTIONS = 10; // Requiere 10 frames consecutivos para confirmar
+    const REQUIRED_DETECTIONS = 3; // Requiere 3 frames consecutivos para confirmar (reducido para mejor UX)
     let confirmedVisible = false;
 
     function animate() {
@@ -412,8 +416,8 @@ window.startScanner = async () => {
             const marker = arToolkitContext.arController.getMarker(i);
             if (marker && marker.idPatt === barcodeValue) {
               currentConfidence = marker.cfPatt;
-              // Requerir confianza mínima de 0.6 (60%) - más estricto
-              if (marker.cfPatt >= 0.6) {
+              // Requerir confianza mínima de 0.4 (40%) - más permisivo para mejor UX
+              if (marker.cfPatt >= 0.4) {
                 isValidDetection = true;
               }
               break;
