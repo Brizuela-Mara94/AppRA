@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MiningTech - Maquinarias</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:"Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+      background: radial-gradient(circle at center, #0f0f10 0%, #000 100%);
+      color:#fff; overflow:hidden;
+    }
+
+    header{
+      position:fixed; top:0; left:0; width:100%;
+      padding:22px 56px; display:flex; align-items:center;
+      z-index:50; background:linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+      
+      /* Animación */
+      opacity: 0;
+      animation: fadeInDown 0.8s ease-out 0.1s forwards;
+    }
+    .logo{font-weight:700; font-size:26px; color:#fff; text-decoration:none}
+    .logo span{color:#d81e27}
+    
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr 320px;
+      gap: 36px;
+      height: 100vh;
+      align-items: center;
+      padding: 100px 60px 60px;
+    }
+
+    .sidebar-left{
+      display:flex; flex-direction:column; gap:18px;
+      align-self:stretch;
+      justify-content:center;
+      
+      /* Animación */
+      opacity: 0;
+      animation: fadeInLeft 0.8s ease-out 0.3s forwards;
+    }
+    .sidebar-left h3{
+      color:#d81e27; font-size:13px; text-transform:uppercase; letter-spacing:2px;
+    }
+    
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    .machinery-list{
+      list-style:none; overflow:auto; padding-right:8px; max-height:calc(100vh - 200px);
+    }
+    .machinery-list li{
+      padding:12px 6px; cursor:pointer; color:#9a9a9a; font-size:14px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      display:flex; justify-content:space-between; align-items:center;
+      transition:all .22s ease;
+      
+      /* Animación escalonada */
+      opacity: 0;
+      animation: fadeInSlideList 0.5s ease-out forwards;
+    }
+    .machinery-list li:nth-child(1) { animation-delay: 0.4s; }
+    .machinery-list li:nth-child(2) { animation-delay: 0.5s; }
+    .machinery-list li:nth-child(3) { animation-delay: 0.6s; }
+    .machinery-list li:nth-child(4) { animation-delay: 0.7s; }
+    .machinery-list li:nth-child(5) { animation-delay: 0.8s; }
+    .machinery-list li:nth-child(6) { animation-delay: 0.9s; }
+    .machinery-list li:nth-child(7) { animation-delay: 1.0s; }
+    .machinery-list li:nth-child(8) { animation-delay: 1.1s; }
+    .machinery-list li:nth-child(9) { animation-delay: 1.2s; }
+    
+    @keyframes fadeInSlideList {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .machinery-list li:hover{ color:#d81e27; transform:translateX(4px) }
+    .machinery-list li.active{ color:#d81e27; font-weight:700; padding-left:10px }
+
+    .small-model{ font-size:12px; color:rgba(255,255,255,0.25); margin-left:8px }
+
+    .machine-view{
+      position:relative; text-align:center; padding:24px;
+      
+      /* Animación */
+      opacity: 0;
+      animation: fadeInScale 0.8s ease-out 0.5s forwards;
+    }
+    
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .machine-category{
+      position:absolute; top:6px; left:50%; transform:translateX(-50%);
+      padding:8px 18px; border-radius:20px; border:1px solid #d81e27;
+      color:#d81e27; font-size:12px; background:rgba(216,30,39,0.06);
+      z-index:20;
+    }
+
+    .machine-wrap{
+      display:inline-block; transition:transform .45s ease, filter .45s ease;
+    }
+
+    .machine-img{
+      width: 480px;
+      max-width: 70vw;
+      transition:opacity .35s ease, transform .45s ease;
+      display:block; margin:0 auto; filter: drop-shadow(0 28px 60px rgba(216,30,39,0.25));
+      opacity:1;
+    }
+    .fade-out .machine-img{ opacity:0; transform:scale(.985) }
+    .fade-in .machine-img{ opacity:1; transform:scale(1) }
+
+    .machine-name{ margin-top:28px; font-size:34px; font-weight:700 }
+    .machine-description{ color:#a9a9a9; margin:14px auto; max-width:700px; line-height:1.6 }
+
+    .machine-nav{ margin-top:20px; display:flex; gap:18px; justify-content:center }
+    .nav-btn{
+      width:46px; height:46px; border-radius:50%; border:1px solid #222; background:transparent;
+      color:#9a9a9a; font-size:18px; cursor:pointer; transition:all .22s;
+    }
+    .nav-btn:hover{ border-color:#d81e27; color:#d81e27; background:rgba(216,30,39,0.06) }
+    
+    /* Hide mobile specs container on desktop */
+    .mobile-specs-container { display: none; }
+
+    .sidebar-right{ 
+      align-self:stretch; 
+      display:flex; 
+      flex-direction:column; 
+      gap:22px; 
+      justify-content:center;
+      
+      /* Animación */
+      opacity: 0;
+      animation: fadeInRight 0.8s ease-out 0.3s forwards;
+    }
+    
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .categories{ display:flex; gap:10px; flex-wrap:wrap }
+    .cat-btn{
+      padding:10px 14px; border-radius:20px; background:transparent; border:1px solid rgba(255,255,255,0.04);
+      color:#bbb; cursor:pointer; font-weight:600; transition:all .18s;
+      
+      /* Animación */
+      opacity: 0;
+      animation: fadeInScale 0.5s ease-out forwards;
+    }
+    .cat-btn:nth-child(1) { animation-delay: 0.4s; }
+    .cat-btn:nth-child(2) { animation-delay: 0.5s; }
+    .cat-btn:nth-child(3) { animation-delay: 0.6s; }
+    .cat-btn:nth-child(4) { animation-delay: 0.7s; }
+    .cat-btn:nth-child(5) { animation-delay: 0.8s; }
+    
+    .cat-btn.active{ border-color:#d81e27; color:#d81e27; background:rgba(216,30,39,0.06) }
+
+    .specs{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:18px; border-radius:8px; border:1px solid rgba(255,255,255,0.03);
+      
+      /* Animación */
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.9s forwards;
+    }
+    .specs h4{ color:#d81e27; font-size:14px; margin-bottom:12px; text-transform:uppercase; letter-spacing:1px }
+    .spec-row{ display:flex; justify-content:space-between; margin-bottom:12px; align-items:center }
+    .spec-label{ font-size:12px; color:#9a9a9a; text-transform:uppercase; letter-spacing:1px }
+    .spec-val{ font-weight:700; color:#fff }
+
+    .ar-btn{
+      margin-top:16px;
+      padding:14px 28px;
+      background:linear-gradient(135deg, #d81e27, #a01620);
+      border:none;
+      border-radius:6px;
+      color:#fff;
+      font-weight:700;
+      font-size:14px;
+      cursor:pointer;
+      transition:all .3s ease;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      box-shadow: 0 4px 15px rgba(216,30,39,0.3);
+      
+      /* Animación inicial y pulso suave */
+      opacity: 0;
+      animation: fadeInPulse 1s ease-out 1.1s forwards, pulse 2s ease-in-out 2s infinite;
+    }
+    
+    @keyframes fadeInPulse {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 4px 15px rgba(216,30,39,0.3);
+      }
+      50% {
+        box-shadow: 0 4px 25px rgba(216,30,39,0.5);
+      }
+    }
+    
+    .ar-btn:hover{
+      transform:translateY(-2px);
+      box-shadow: 0 6px 20px rgba(216,30,39,0.5);
+      animation: none; /* Detiene el pulso al hacer hover */
+      opacity: 1; /* Mantiene la opacidad completa en hover */
+    }
+    
+    .ar-btn:active{
+      transform:translateY(0);
+      box-shadow: 0 2px 10px rgba(216,30,39,0.4);
+    }
+
+    /* Selector de modo AR */
+    .ar-mode-selector {
+      margin-top: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 1.0s forwards;
+    }
+
+    .mode-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .mode-label:hover {
+      background: rgba(216,30,39,0.1);
+      border-color: rgba(216,30,39,0.3);
+    }
+
+    .mode-label input[type="radio"] {
+      margin: 0;
+      cursor: pointer;
+      accent-color: #d81e27;
+    }
+
+    .mode-label input[type="radio"]:checked + .mode-text {
+      color: #d81e27;
+      font-weight: 600;
+    }
+
+    .mode-text {
+      font-size: 12px;
+      color: #9a9a9a;
+      transition: all 0.3s ease;
+    }
+
+    .page-indicator{ 
+      position:fixed; 
+      bottom:36px; 
+      left:60px; 
+      font-size:42px; 
+      color:rgba(255,255,255,0.08); 
+      font-weight:700;
+      
+      /* Animación */
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.7s forwards;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .empty-msg{ color:#9a9a9a; font-size:15px; padding:10px 6px }
+
+    /* Hamburger menu button */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      z-index: 1000;
+      background: rgba(216, 30, 39, 0.9);
+      border: none;
+      border-radius: 8px;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle span {
+      width: 24px;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle.active span:nth-child(1) {
+      transform: rotate(45deg) translate(7px, 7px);
+    }
+
+    .menu-toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-toggle.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+
+    /* Mobile sidebar */
+    .mobile-sidebar {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 85%;
+      max-width: 400px;
+      height: 100vh;
+      background: linear-gradient(180deg, #1a1a1c 0%, #0f0f10 100%);
+      z-index: 999;
+      overflow-y: auto;
+      padding: 80px 25px 30px;
+      transition: right 0.3s ease;
+      box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .mobile-sidebar.active {
+      right: 0;
+    }
+
+    .mobile-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 998;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .mobile-overlay.active {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-section {
+      margin-bottom: 30px;
+    }
+
+    .mobile-section h3 {
+      color: #d81e27;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width:1100px){
+      .layout{ 
+        grid-template-columns: 1fr; 
+        padding: 110px 30px 30px; 
+        gap: 20px;
+        height: auto;
+        min-height: 100vh;
+      }
+      
+      body {
+        overflow-y: auto;
+      }
+      
+      .sidebar-left{ display:none }
+      .sidebar-right { display: none }
+      
+      /* Mostrar contenedor de specs móvil */
+      .mobile-specs-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 0;
+        margin-top: 20px;
+      }
+      
+      .categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+      
+      .cat-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      
+      .specs {
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      
+      .ar-btn {
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 16px 32px;
+        font-size: 16px;
+      }
+      
+      .ar-mode-selector {
+        max-width: 600px;
+        margin: 0 auto 16px;
+        width: 100%;
+      }
+      
+      .menu-toggle, .mobile-sidebar, .mobile-overlay {
+        display: flex;
+      }
+      
+      .machine-view {
+        padding: 20px 10px;
+        order: 2;
+      }
+      
+      .machine-img{ 
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      
+      header{ padding:18px 24px }
+      
+      .machine-name{ font-size:28px; margin-top: 20px; }
+      
+      .machine-description {
+        font-size: 15px;
+        margin: 15px 0 25px;
+      }
+      
+      .machine-nav {
+        margin-top: 25px;
+        gap: 15px;
+      }
+      
+      .nav-btn {
+        width: 55px;
+        height: 55px;
+        font-size: 24px;
+      }
+      
+      .page-indicator {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        text-align: center;
+        font-size: 32px;
+        margin-top: 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        padding: 100px 20px 30px;
+      }
+      
+      .machine-name {
+        font-size: 24px;
+      }
+      
+      .machine-description {
+        font-size: 14px;
+      }
+      
+      .nav-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+      }
+      
+      .specs {
+        padding: 16px;
+      }
+      
+      .specs h4 {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+      
+      .spec-row {
+        margin-bottom: 10px;
+      }
+      
+      .spec-label {
+        font-size: 11px;
+      }
+      
+      .spec-val {
+        font-size: 14px;
+      }
+      
+      .ar-btn {
+        padding: 14px 28px;
+        font-size: 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .layout {
+        padding: 90px 15px 25px;
+      }
+      
+      .machine-img {
+        max-width: 100%;
+      }
+      
+      .machine-name {
+        font-size: 22px;
+      }
+      
+      .machine-description {
+        font-size: 13px;
+        margin: 12px 0 20px;
+      }
+      
+      .nav-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+      
+      .cat-btn {
+        padding: 7px 10px;
+        font-size: 12px;
+      }
+      
+      .specs {
+        padding: 14px;
+      }
+      
+      .ar-btn {
+        padding: 13px 24px;
+        font-size: 14px;
+      }
+      
+      .mode-label {
+        font-size: 13px;
+        padding: 8px 12px;
+      }
+      
+      .mobile-sidebar {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Mobile Overlay -->
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <!-- Mobile Sidebar -->
+    <!-- Mobile Sidebar -->
+  <div class="mobile-sidebar" id="mobileSidebar">
+    <div class="mobile-section">
+      <h3>Seleccionar Maquinaria</h3>
+      <ul id="mobileMachineryList" class="machinery-list">
+      </ul>
+    </div>
+  </div>
+
+  <header>
+    <a class="logo" href="#">Mining<span>Tech</span></a>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar-left">
+      <h3>Maquinarias</h3>
+      <ul id="machineryList" class="machinery-list" aria-label="Lista de maquinarias">
+      </ul>
+    </aside>
+
+    <main class="machine-view" role="main">
+      <div class="machine-category" id="machineCategory">MAQUINARIA</div>
+
+      <div id="machineWrapper" class="machine-wrap fade-in">
+        <img id="machineImage" class="machine-img" src="/AppRA/assets/maquina-D_k1uTPV.png" alt="Excavadora" />
+      </div>
+
+      <h2 id="machineName" class="machine-name">Excavadora hidráulica</h2>
+      <p id="machineDesc" class="machine-description">
+        Excavadora de alto rendimiento diseñada para operaciones mineras de gran escala.
+      </p>
+
+      <div class="machine-nav">
+        <button class="nav-btn" id="prevBtn" title="Anterior">←</button>
+        <button class="nav-btn" id="nextBtn" title="Siguiente">→</button>
+      </div>
+
+      <!-- Mobile Specs and AR (visible only on mobile) -->
+      <div class="mobile-specs-container">
+        <div class="mobile-section">
+          <h3>Especificaciones</h3>
+          <div class="specs">
+            <div class="spec-row"><div class="spec-label">Capacidad</div><div class="spec-val" id="mobileSpecCapacity">-</div></div>
+            <div class="spec-row"><div class="spec-label">Potencia</div><div class="spec-val" id="mobileSpecPower">-</div></div>
+            <div class="spec-row"><div class="spec-label">Peso</div><div class="spec-val" id="mobileSpecWeight">-</div></div>
+            <div class="spec-row"><div class="spec-label">Aplicación</div><div class="spec-val" id="mobileSpecApplication">-</div></div>
+          </div>
+        </div>
+
+        <div class="mobile-section">
+          <h3>Modo AR</h3>
+          <div class="ar-mode-selector">
+            <label class="mode-label">
+              <input type="radio" name="arModeMobile" value="mindar" checked id="modeMindARMobile">
+              <span class="mode-text">📦 MindAR</span>
+            </label>
+            <label class="mode-label">
+              <input type="radio" name="arModeMobile" value="arjs" id="modeARjsMobile">
+              <span class="mode-text">🔲 AR.js</span>
+            </label>
+          </div>
+        </div>
+
+        <button class="ar-btn" id="arBtnMobile" aria-label="Activar Realidad Aumentada">
+          Ver en AR
+        </button>
+      </div>
+    </main>
+
+    <aside class="sidebar-right">
+      <div>
+        <h3 style="color:#d81e27; text-transform:uppercase; font-size:13px; margin-bottom:12px">Categorías</h3>
+        <div class="categories" id="categories">
+        </div>
+      </div>
+
+      <div class="specs" id="specsBox" aria-live="polite">
+        <h4>Especificaciones</h4>
+        <div class="spec-row"><div class="spec-label">Capacidad</div><div class="spec-val" id="specCapacity">4.5 m³</div></div>
+        <div class="spec-row"><div class="spec-label">Potencia</div><div class="spec-val" id="specPower">525 HP</div></div>
+        <div class="spec-row"><div class="spec-label">Peso operativo</div><div class="spec-val" id="specWeight">85,000 kg</div></div>
+        <div class="spec-row"><div class="spec-label">Aplicación</div><div class="spec-val" id="specApplication">Minería a cielo abierto</div></div>
+        
+        <div class="ar-mode-selector">
+          <label class="mode-label">
+            <input type="radio" name="arMode" value="mindar" checked id="modeMindAR">
+            <span class="mode-text">📦 MindAR (Marcadores compilados)</span>
+          </label>
+          <label class="mode-label">
+            <input type="radio" name="arMode" value="arjs" id="modeARjs">
+            <span class="mode-text">� AR.js (Códigos de barras)</span>
+          </label>
+        </div>
+        <button class="ar-btn" id="arBtn">Ver en Realidad Aumentada</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="page-indicator" id="pageIndicator">01 <span>/ 07</span></div>
+
+  <script>
+    const machines = [
+      // ✅ ACTIVOS - Con marcadores (7 elementos)
+      { name:"Túnel de Acceso", group:"Infraestructura", category:"Entrada de Mina", image:"./assets/tunel.png", description:"Entrada fortificada para acceso a la mina subterránea. Estructura reforzada con soportes metálicos y sistemas de ventilación integrados para garantizar operaciones seguras.", capacity:"4.5 m altura", power:"N/A", weight:"Estructura fija", application:"Minería subterránea", arMarker:"tunel" },
+      
+      { name:"Máquina Araña", group:"Maquinaria", category:"Perforación", image:"./assets/garras.png", description:"Equipo de perforación especializado con brazos articulados tipo araña. Permite perforación en túneles y espacios confinados con alta precisión y estabilidad.", capacity:"12-15 m³", power:"450 HP", weight:"45,000 kg", application:"Perforación en túneles", arMarker:"garras" },
+      
+      { name:"Camión Minero", group:"Transporte", category:"Transporte", image:"./assets/carga.png", description:"Camión ultra clase diseñado para transporte de material pesado en grandes distancias. Capacidad máxima de carga para operaciones mineras a gran escala.", capacity:"363 t", power:"4,000 HP", weight:"687,000 kg", application:"Transporte de mineral", arMarker:"camion" },
+      
+      { name:"Perforadora Rotativa", group:"Equipamiento", category:"Perforación", image:"./assets/perforadora.png", description:"Equipo de perforación de alto rendimiento para barrenos de voladura. Sistema rotativo de precisión para operaciones de exploración y extracción.", capacity:"311 mm diámetro", power:"783 HP", weight:"95,000 kg", application:"Perforación y voladura", arMarker:"perforadora" },
+      
+      { name:"Casco Minero", group:"Equipamiento", category:"Seguridad", image:"./assets/lamp.png", description:"Casco de seguridad certificado con lámpara integrada. Protección contra impactos y penetración. Cumple con estándares internacionales de seguridad minera.", capacity:"Ajustable", power:"LED 5W", weight:"450 g", application:"Protección personal", arMarker:"casco" },
+      
+      { name:"Pico Minero", group:"Equipamiento", category:"Herramientas", image:"./assets/pico.png", description:"Herramienta tradicional de acero forjado para extracción manual. Diseño ergonómico para trabajos de precisión en minería artesanal y mantenimiento.", capacity:"90 cm largo", power:"Manual", weight:"3.2 kg", application:"Extracción manual", arMarker:"pico" },
+      
+      { name:"Rodillo Compactador", group:"Transporte", category:"Transporte", image:"./assets/truck.png", description:"Vehículo de carga pesada para transporte de mineral. Sistema hidráulico de alta capacidad para operaciones de gran escala.", capacity:"50 t", power:"850 HP", weight:"120,000 kg", application:"Transporte de material", arMarker:"truck" },
+      
+      // ⏸️ DESACTIVADOS TEMPORALMENTE - Sin marcadores aún (para integrar después)
+      // { name:"Pala Eléctrica", group:"Maquinaria", category:"Excavación", image:"./assets/maquina.png", description:"Pala eléctrica de alto tonelaje para operaciones de carga continua. Sistema eléctrico de alta eficiencia para extracción masiva de mineral.", capacity:"120 m³", power:"6,200 kW", weight:"980,000 kg", application:"Carga de mineral", arMarker:"pala" },
+      // { name:"Bulldozer", group:"Maquinaria", category:"Movimiento de tierra", image:"./assets/maquina.png", description:"Tractor de orugas de alta potencia para empuje y nivelación. Sistema hidráulico de precisión para movimiento de grandes volúmenes de tierra.", capacity:"27 m³ hoja", power:"850 HP", weight:"112,000 kg", application:"Empuje y nivelación", arMarker:"bulldozer" },
+      // { name:"Motoniveladora", group:"Mantenimiento", category:"Mantenimiento", image:"./assets/maquina.png", description:"Motoniveladora de precisión para mantenimiento de caminos mineros. Sistema de nivelación láser para superficies perfectamente uniformes.", capacity:"7.3 m hoja", power:"525 HP", weight:"64,000 kg", application:"Mantenimiento vial", arMarker:"motoniveladora" },
+    ];
+
+    const groups = ["Todas", ...Array.from(new Set(machines.map(m => m.group)))];
+
+    let currentGroup = "Todas";
+    let filteredIndexes = machines.map((_,i)=>i);
+    let currentFilteredIndex = 0;
+
+    const listEl = document.getElementById('machineryList');
+    const categoriesEl = document.getElementById('categories');
+    const machineImage = document.getElementById('machineImage');
+    const machineName = document.getElementById('machineName');
+    const machineDesc = document.getElementById('machineDesc');
+    const machineCategory = document.getElementById('machineCategory');
+    const specCapacity = document.getElementById('specCapacity');
+    const specPower = document.getElementById('specPower');
+    const specWeight = document.getElementById('specWeight');
+    const specApplication = document.getElementById('specApplication');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const wrapper = document.getElementById('machineWrapper');
+    const arBtn = document.getElementById('arBtn');
+
+    function renderCategories(){
+      categoriesEl.innerHTML = "";
+      groups.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-btn' + (g === currentGroup ? ' active' : '');
+        btn.textContent = g;
+        btn.onclick = () => { filterByGroup(g); };
+        categoriesEl.appendChild(btn);
+      });
+    }
+
+    function renderList(){
+      listEl.innerHTML = "";
+      if (filteredIndexes.length === 0){
+        const li = document.createElement('li');
+        li.className = 'empty-msg';
+        li.textContent = 'No hay elementos en esta categoría.';
+        listEl.appendChild(li);
+        return;
+      }
+      filteredIndexes.forEach((machineIdx, pos) => {
+        const m = machines[machineIdx];
+        const li = document.createElement('li');
+        li.dataset.idx = machineIdx;
+        li.innerHTML = `<span>${m.name}<span class="small-model">${m.category}</span></span>`;
+        if (pos === currentFilteredIndex) li.classList.add('active');
+        li.onclick = () => {
+          currentFilteredIndex = filteredIndexes.indexOf(machineIdx);
+          updateToCurrentFiltered();
+        };
+        listEl.appendChild(li);
+      });
+    }
+
+    function filterByGroup(group){
+      currentGroup = group;
+      if (group === "Todas") filteredIndexes = machines.map((_,i)=>i);
+      else filteredIndexes = machines.map((m,i)=> m.group === group ? i : -1).filter(i => i !== -1);
+
+      currentFilteredIndex = 0;
+      renderCategories();
+      renderList();
+      updateToCurrentFiltered();
+    }
+
+    function updateToCurrentFiltered(){
+      if (filteredIndexes.length === 0){
+        machineImage.src = "";
+        machineName.textContent = "";
+        machineDesc.textContent = "";
+        machineCategory.textContent = currentGroup.toUpperCase();
+        specCapacity.textContent = "-";
+        specPower.textContent = "-";
+        specWeight.textContent = "-";
+        specApplication.textContent = "-";
+        pageIndicator.innerHTML = `00 <span>/ ${String(filteredIndexes.length).padStart(2,'0')}</span>`;
+        return;
+      }
+
+      const globalIndex = filteredIndexes[currentFilteredIndex];
+      const m = machines[globalIndex];
+
+      wrapper.classList.remove('fade-in');
+      wrapper.classList.add('fade-out');
+
+      setTimeout(() => {
+        machineImage.src = m.image;
+        machineName.textContent = m.name;
+        machineDesc.textContent = m.description;
+        machineCategory.textContent = m.category.toUpperCase();
+        specCapacity.textContent = m.capacity;
+        specPower.textContent = m.power;
+        specWeight.textContent = m.weight;
+        specApplication.textContent = m.application;
+
+        document.querySelectorAll('.machinery-list li').forEach((li) => li.classList.remove('active'));
+        const listItems = document.querySelectorAll('.machinery-list li');
+        if (listItems[currentFilteredIndex]) listItems[currentFilteredIndex].classList.add('active');
+
+        pageIndicator.innerHTML = `${String(currentFilteredIndex+1).padStart(2,'0')} <span>/ ${String(filteredIndexes.length).padStart(2,'0')}</span>`;
+
+        wrapper.classList.remove('fade-out');
+        wrapper.classList.add('fade-in');
+      }, 260);
+    }
+
+    function changeMachine(delta){
+      if (filteredIndexes.length === 0) return;
+      currentFilteredIndex = (currentFilteredIndex + delta + filteredIndexes.length) % filteredIndexes.length;
+      updateToCurrentFiltered();
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => changeMachine(-1));
+    document.getElementById('nextBtn').addEventListener('click', () => changeMachine(1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') changeMachine(-1);
+      if (e.key === 'ArrowRight') changeMachine(1);
+    });
+
+    arBtn.addEventListener('click', async () => {
+  if (filteredIndexes.length === 0) return;
+
+  try {
+    // ✅ Paso 1: Solicitar permiso de cámara
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    // Detener inmediatamente el stream (solo era para obtener permiso)
+    stream.getTracks().forEach(track => track.stop());
+
+    // ✅ Paso 2: Leer el modo AR seleccionado
+    const selectedMode = document.querySelector('input[name="arMode"]:checked').value;
+    const m = machines[filteredIndexes[currentFilteredIndex]];
+
+    // ✅ Paso 3: Redirigir al escáner correspondiente
+    let url;
+    if (selectedMode === 'mindar') {
+      // Usar scanner.html para MindAR (marcadores compilados)
+      url = `scanner.html?marker=${m.arMarker}&name=${encodeURIComponent(m.name)}`;
+    } else if (selectedMode === 'arjs') {
+      // Usar arjs-scanner.html para AR.js (códigos de barras)
+      url = `arjs-scanner.html?marker=${m.arMarker}&name=${encodeURIComponent(m.name)}`;
+    }
+    
+    window.location.href = url;
+
+  } catch (err) {
+    // ❌ Paso 3: Si no se otorga el permiso, mostrar aviso visual
+    console.warn("Acceso a la cámara denegado o error:", err);
+    
+    // Crear mensaje de error si no existe
+    if (!document.getElementById("cameraError")) {
+      const errorDiv = document.createElement("div");
+      errorDiv.id = "cameraError";
+      errorDiv.className = "error-message";
+      errorDiv.innerHTML = `
+        <h3>No se pudo acceder a la cámara</h3>
+        <p>Por favor, otorgá permiso para usar la cámara y vuelve a intentarlo.</p>
+      `;
+      document.body.appendChild(errorDiv);
+
+      setTimeout(() => errorDiv.remove(), 4000);
+    }
+  }
+});
+
+    // ========== MOBILE MENU FUNCTIONALITY ==========
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const mobileMachineryList = document.getElementById('mobileMachineryList');
+    const arBtnMobile = document.getElementById('arBtnMobile');
+
+    // Toggle mobile menu
+    function toggleMobileMenu() {
+      menuToggle.classList.toggle('active');
+      mobileSidebar.classList.toggle('active');
+      mobileOverlay.classList.toggle('active');
+      document.body.style.overflow = mobileSidebar.classList.contains('active') ? 'hidden' : 'auto';
+    }
+
+    menuToggle.addEventListener('click', toggleMobileMenu);
+    mobileOverlay.addEventListener('click', toggleMobileMenu);
+
+    // Sync AR mode radios between desktop and mobile
+    document.querySelectorAll('input[name="arMode"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const mobileRadio = document.querySelector(`input[name="arModeMobile"][value="${e.target.value}"]`);
+        if (mobileRadio) mobileRadio.checked = true;
+      });
+    });
+
+    document.querySelectorAll('input[name="arModeMobile"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const desktopRadio = document.querySelector(`input[name="arMode"][value="${e.target.value}"]`);
+        if (desktopRadio) desktopRadio.checked = true;
+      });
+    });
+
+    // Mobile AR button functionality
+    arBtnMobile.addEventListener('click', async () => {
+      if (filteredIndexes.length === 0) return;
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream.getTracks().forEach(track => track.stop());
+
+        const selectedMode = document.querySelector('input[name="arModeMobile"]:checked').value;
+        const m = machines[filteredIndexes[currentFilteredIndex]];
+
+        let url;
+        if (selectedMode === 'mindar') {
+          url = `scanner.html?marker=${m.arMarker}&name=${encodeURIComponent(m.name)}`;
+        } else if (selectedMode === 'arjs') {
+          url = `arjs-scanner.html?marker=${m.arMarker}&name=${encodeURIComponent(m.name)}`;
+        }
+        
+        window.location.href = url;
+
+      } catch (err) {
+        console.warn("Acceso a la cámara denegado:", err);
+        alert('Por favor, otorgá permiso para usar la cámara.');
+      }
+    });
+
+    // Render mobile machinery list
+    function renderMobileList() {
+      mobileMachineryList.innerHTML = "";
+      filteredIndexes.forEach((machineIdx, pos) => {
+        const m = machines[machineIdx];
+        const li = document.createElement('li');
+        li.dataset.idx = machineIdx;
+        li.innerHTML = `<span>${m.name}</span>`;
+        if (pos === currentFilteredIndex) li.classList.add('active');
+        li.addEventListener('click', () => {
+          currentFilteredIndex = pos;
+          updateToCurrentFiltered();
+          toggleMobileMenu();
+        });
+        mobileMachineryList.appendChild(li);
+      });
+    }
+
+    // Sync mobile specs with current machine
+    function syncMobileSpecs() {
+      if (filteredIndexes.length === 0) return;
+      const m = machines[filteredIndexes[currentFilteredIndex]];
+      document.getElementById('mobileSpecCapacity').textContent = m.capacity;
+      document.getElementById('mobileSpecPower').textContent = m.power;
+      document.getElementById('mobileSpecWeight').textContent = m.weight;
+      document.getElementById('mobileSpecApplication').textContent = m.application;
+    }
+
+    // Initialize mobile menu content
+    renderMobileList();
+    syncMobileSpecs();
+
+    // Update mobile content when machine changes
+    const originalUpdateFunction = updateToCurrentFiltered;
+    updateToCurrentFiltered = function() {
+      originalUpdateFunction();
+      renderMobileList();
+      syncMobileSpecs();
+    };
+
+    renderCategories();
+    filterByGroup('Todas');
+  </script>
+</body>
+</html>
